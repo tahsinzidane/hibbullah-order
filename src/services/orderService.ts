@@ -3,8 +3,15 @@ import { isBackendReady } from "../lib/env";
 import { supabase } from "../lib/supabase";
 import type { CartItem } from "../types/cart";
 import type { Database } from "../types/database";
+import type { NotificationType } from "../types/notification";
 import type { Order, OrderItem, OrderStatus } from "../types/order";
+import { formatCurrency } from "../utils/currency";
 import { clearCart, getCartItems, summarizeCart } from "./cartService";
+import {
+  createNotification,
+  notifyAdmins,
+  safeNotify,
+} from "./notificationService";
 import { fetchUserProfile } from "./profileService";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
@@ -463,7 +470,62 @@ export async function submitOrder(input: SubmitOrderInput): Promise<Order> {
 
   const order = await getOrderById(orderRow.id);
   if (!order) throw new Error("Order was created but could not be loaded.");
+
+  // Admin notification for the new order (best-effort; never blocks checkout).
+  await safeNotify(() =>
+    notifyAdmins({
+      type: "info",
+      title: "New order",
+      body: `${order.customerName} placed a new order ${order.orderNumber} for ${formatCurrency(order.total)}.`,
+    }),
+  );
+
   return order;
+}
+
+/**
+ * Best-effort customer notification whenever an order transitions to a
+ * customer-visible state (confirmed, processing, shipped, delivered, cancelled).
+ */
+async function notifyCustomerOrderChange(order: Order): Promise<void> {
+  const prompts: Partial<
+    Record<OrderStatus, { type: NotificationType; title: string; body: string }>
+  > = {
+    CONFIRMED: {
+      type: "success",
+      title: "Order confirmed",
+      body: `Your order ${order.orderNumber} has been confirmed and is being prepared.`,
+    },
+    PROCESSING: {
+      type: "info",
+      title: "Order processing",
+      body: `Your order ${order.orderNumber} is now being processed.`,
+    },
+    OUT_FOR_DELIVERY: {
+      type: "info",
+      title: "Order shipped",
+      body: `Your order ${order.orderNumber} is out for delivery.`,
+    },
+    DELIVERED: {
+      type: "success",
+      title: "Order delivered",
+      body: `Your order ${order.orderNumber} has been delivered.`,
+    },
+    CANCELLED: {
+      type: "warning",
+      title: "Order cancelled",
+      body: `Your order ${order.orderNumber} has been cancelled.`,
+    },
+  };
+
+  const prompt = prompts[order.status];
+  if (!prompt) return;
+  await createNotification({
+    userId: order.customerId,
+    type: prompt.type,
+    title: prompt.title,
+    body: prompt.body,
+  });
 }
 
 export async function updateOrderStatus(
@@ -483,5 +545,41 @@ export async function updateOrderStatus(
 
   const order = await getOrderById(orderId);
   if (!order) throw new Error("Order not found.");
+
+  await safeNotify(() => notifyCustomerOrderChange(order));
   return order;
+}
+
+/**
+ * Customer-initiated cancellation. Only PENDING orders can be cancelled from
+ * the customer order page. Notifies every admin about the cancellation event.
+ */
+export async function cancelOrderByCustomer(orderId: string): Promise<Order> {
+  requireBackend();
+  if (!orderId) throw new Error("Order not found.");
+
+  const order = await getOrderById(orderId);
+  if (!order) throw new Error("Order not found.");
+  if (order.status !== "PENDING") {
+    throw new Error("Only pending orders can be cancelled.");
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({ status: "CANCELLED" })
+    .eq("id", orderId);
+
+  if (error) throw new Error(error.message);
+
+  await safeNotify(() =>
+    notifyAdmins({
+      type: "warning",
+      title: "Order cancelled by customer",
+      body: `${order.customerName} cancelled order ${order.orderNumber}.`,
+    }),
+  );
+
+  const updated = await getOrderById(orderId);
+  if (!updated) throw new Error("Order not found.");
+  return updated;
 }

@@ -2,6 +2,7 @@ import config from "../../constants/config";
 import { wait } from "../../lib/result";
 import type { InventoryItem, StockAdjustment } from "../../types/inventory";
 import { store } from "../mockData";
+import { notifyLowStock, safeNotify } from "../notificationService";
 
 export async function getInventory(): Promise<InventoryItem[]> {
   await wait();
@@ -27,6 +28,7 @@ export async function adjustStock(input: {
   );
   if (!item) throw new Error("Batch not found.");
 
+  const before = item.quantity;
   const next =
     input.type === "increase"
       ? item.quantity + input.quantity
@@ -38,6 +40,11 @@ export async function adjustStock(input: {
 
   const product = store.products.find((entry) => entry.id === input.productId);
   if (product) product.stock = next;
+
+  // Dynamic low-stock alert when stock drops (best-effort).
+  if (input.type === "decrease") {
+    await safeNotify(() => notifyLowStock(input.productId, { maxStock: before }));
+  }
 
   const adjustment: StockAdjustment = {
     id: `sa-${Date.now()}`,

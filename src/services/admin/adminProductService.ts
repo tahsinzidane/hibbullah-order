@@ -1,6 +1,7 @@
 import { supabase } from "../../lib/supabase";
 import { ProductFormInput } from "../../components/admin/ProductForm";
 import { uploadToCloudinary } from "../cloudinaryService";
+import { notifyLowStock, safeNotify } from "../notificationService";
 import { getProductById, mapProductRow, type ProductRow } from "../productService";
 import type { Product } from "../../types/product";
 
@@ -53,6 +54,7 @@ export const createProduct = async (formInput: ProductFormInput) => {
     original_price: formInput.originalPrice ? Number(formInput.originalPrice) : null,
     discount_percent: formInput.discountPercent ? Number(formInput.discountPercent) : null,
     stock: Number(formInput.stock),
+    max_stock: Number(formInput.stock),
     image: finalMainImage,
     primary_image: primaryUrl,
     secondary_image: secondaryUrl,
@@ -73,6 +75,13 @@ export const createProduct = async (formInput: ProductFormInput) => {
   if (error) {
     console.error("[Supabase Insert Error]:", error);
     throw new Error(`Database Error: ${error.message}`);
+  }
+
+  // Dynamic low-stock check on the freshly-created product (best-effort).
+  if (data?.id) {
+    await safeNotify(() =>
+      notifyLowStock(data.id, { maxStock: Number(formInput.stock) }),
+    );
   }
 
   console.log("[Supabase] Upload Success:", data);
@@ -96,6 +105,26 @@ export const updateProduct = async (
 
   const finalMainImage = primaryUrl || formInput.image || secondaryUrl || "";
 
+  const newStock = Number(formInput.stock);
+
+  // Preserve the reference max_stock and raise it when the admin restocks to a
+  // new high-water mark, so the dynamic low-stock threshold still scales.
+  const { data: existing, error: fetchError } = await supabase
+    .from("products")
+    .select("stock, max_stock")
+    .eq("id", productId)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error("[Supabase Max Stock Fetch Error]:", fetchError.message);
+    throw new Error(`Database Error: ${fetchError.message}`);
+  }
+
+  const maxStock = Math.max(
+    Number(existing?.max_stock ?? existing?.stock ?? newStock),
+    newStock,
+  );
+
   const payload = {
     name: formInput.name,
     brand: formInput.brand,
@@ -107,7 +136,8 @@ export const updateProduct = async (
     price: Number(formInput.price),
     original_price: formInput.originalPrice ? Number(formInput.originalPrice) : null,
     discount_percent: formInput.discountPercent ? Number(formInput.discountPercent) : null,
-    stock: Number(formInput.stock),
+    stock: newStock,
+    max_stock: maxStock,
     image: finalMainImage,
     primary_image: primaryUrl,
     secondary_image: secondaryUrl,
@@ -128,6 +158,9 @@ export const updateProduct = async (
     console.error("[Supabase Update Error]:", error);
     throw new Error(`Database Error: ${error.message}`);
   }
+
+  // Dynamic low-stock check after the stock change (best-effort).
+  await safeNotify(() => notifyLowStock(productId, { maxStock }));
 
   return data ? mapProductRow(data as ProductRow) : (await getProductById(productId))!;
 };

@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
 import sizes from "../../constants/sizes";
 import spacing from "../../constants/spacing";
@@ -28,7 +28,12 @@ function ProductCard({
     <Pressable
       style={[styles.card, compact && styles.compact]}
       onPress={() => onPress?.(product)}
-      accessibilityRole="button"
+      accessibilityRole={
+        // On web the inner "Add to cart" control renders as a button; wrapping
+        // it in another button (role="button" on the card) creates invalid
+        // nested-button HTML. Drop the card-level role only there.
+        Platform.OS === "web" && onAddToCart ? undefined : "button"
+      }
       accessibilityLabel={`${product.name}, ${product.brand}, ${product.stock > 0 ? "In stock" : "Out of stock"}`}
     >
       <ProductImage uri={product.image} recyclingKey={product.id} style={styles.image} />
@@ -50,7 +55,12 @@ function ProductCard({
         {onAddToCart ? (
           <Pressable
             style={[styles.addButton, addToCartLoading && styles.addButtonDisabled]}
-            onPress={() => onAddToCart(product)}
+            onPress={(event) => {
+              // Stop the press from bubbling to the outer card on web, where a
+              // click would otherwise trigger onPress() (card navigation) too.
+              event.stopPropagation();
+              onAddToCart(product);
+            }}
             disabled={addToCartLoading}
             accessibilityRole="button"
             accessibilityLabel={`Add ${product.name} to cart`}

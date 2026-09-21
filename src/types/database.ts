@@ -47,13 +47,37 @@ export type Database = {
           price: number;
           original_price: number | null;
           discount_percent: number | null;
+          stock: number;
+          max_stock: number;
           unit: string;
           image_path: string | null;
           is_active: boolean;
           is_featured: boolean;
           created_at: string;
         };
-        Insert: Database["public"]["Tables"]["products"]["Row"];
+        Insert: {
+          id?: string;
+          name: string;
+          brand: string;
+          generic_name: string;
+          manufacturer_id: string;
+          category_id: string;
+          description: string;
+          price: number;
+          original_price?: number | null;
+          discount_percent?: number | null;
+          stock: number;
+          max_stock?: number;
+          unit: string;
+          image?: string | null;
+          primary_image?: string | null;
+          secondary_image?: string | null;
+          batch_number?: string | null;
+          expiry_date?: string | null;
+          is_active?: boolean;
+          is_featured?: boolean;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["products"]["Insert"]>;
       };
       categories: {
@@ -234,7 +258,31 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      create_notification: {
+        Args: {
+          p_user_id: string;
+          p_type: string;
+          p_title: string;
+          p_body: string;
+        };
+        Returns: undefined;
+      };
+      notify_admins: {
+        Args: {
+          p_type: string;
+          p_title: string;
+          p_body: string;
+        };
+        Returns: undefined;
+      };
+      notify_low_stock: {
+        Args: {
+          p_product_id: string;
+        };
+        Returns: undefined;
+      };
+    };
     Enums: {
       order_status:
         | "PENDING"

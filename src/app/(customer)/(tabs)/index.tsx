@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AppLogo from "../../../components/common/AppLogo";
 import ErrorState from "../../../components/common/ErrorState";
 import LoadingState from "../../../components/common/LoadingState";
+import NotificationBell from "../../../components/common/NotificationBell";
 import SearchBar from "../../../components/common/SearchBar";
 import ProductCard from "../../../components/products/ProductCard";
 import colors from "../../../constants/colors";
@@ -98,23 +99,26 @@ export default function CustomerHomeScreen() {
             <AppLogo size={38} />
             <Text style={styles.brandName}>Hibbullah</Text>
           </View>
-          <Pressable
-            style={styles.cartButton}
-            onPress={() => router.push("/(customer)/(tabs)/cart")}
-            accessibilityRole="button"
-            accessibilityLabel="Open cart"
-          >
-            <SymbolView
-              name={{
-                ios: "cart.fill",
-                android: "shopping_cart",
-                web: "shopping_cart",
-              }}
-              tintColor={colors.primary}
-              size={23}
-            />
-            {itemCount > 0 ? <Text style={styles.cartCount}>{itemCount > 99 ? "99+" : itemCount}</Text> : null}
-          </Pressable>
+          <View style={styles.headerActions}>
+            <NotificationBell />
+            <Pressable
+              style={styles.cartButton}
+              onPress={() => router.push("/(customer)/(tabs)/cart")}
+              accessibilityRole="button"
+              accessibilityLabel="Open cart"
+            >
+              <SymbolView
+                name={{
+                  ios: "cart.fill",
+                  android: "shopping_cart",
+                  web: "shopping_cart",
+                }}
+                tintColor={colors.primary}
+                size={23}
+              />
+              {itemCount > 0 ? <Text style={styles.cartCount}>{itemCount > 99 ? "99+" : itemCount}</Text> : null}
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.searchArea}>
@@ -311,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
     fontWeight: "600",
   },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   cartButton: {
     minWidth: 44,
     minHeight: 44,

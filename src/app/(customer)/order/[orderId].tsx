@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import Button from '../../../components/common/Button';
 import Header from '../../../components/common/Header';
 import StatusBadge from '../../../components/common/StatusBadge';
 import LoadingState from '../../../components/common/LoadingState';
@@ -9,7 +10,7 @@ import ErrorState from '../../../components/common/ErrorState';
 import colors from '../../../constants/colors';
 import spacing from '../../../constants/spacing';
 import typography from '../../../constants/typography';
-import { getOrderById } from '../../../services/orderService';
+import { cancelOrderByCustomer, getOrderById } from '../../../services/orderService';
 import type { Order } from '../../../types/order';
 import { formatCurrency } from '../../../utils/currency';
 import { formatDateTime } from '../../../utils/date';
@@ -22,6 +23,8 @@ export default function CustomerOrderDetailScreen() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -61,6 +64,29 @@ export default function CustomerOrderDetailScreen() {
       })
       .catch((err) => setError(normalizeError(err).message))
       .finally(() => setLoading(false));
+  };
+
+  const handleCancel = () => {
+    if (order?.status !== "PENDING") return;
+    Alert.alert(
+      "Cancel order",
+      `Are you sure you want to cancel ${order.orderNumber}? This cannot be undone.`,
+      [
+        { text: "Keep order", style: "cancel" },
+        {
+          text: "Cancel order",
+          style: "destructive",
+          onPress: () => {
+            setCancelling(true);
+            setCancelError(null);
+            void cancelOrderByCustomer(order.id)
+              .then((updated) => setOrder(updated))
+              .catch((err) => setCancelError(normalizeError(err).message))
+              .finally(() => setCancelling(false));
+          },
+        },
+      ],
+    );
   };
 
   if (loading) return <LoadingState label="Loading order" />;
@@ -142,6 +168,24 @@ export default function CustomerOrderDetailScreen() {
             <Text style={styles.summaryLabel}>{formatCurrency(order.deliveryFee)}</Text>
           </View>
         </View>
+
+        {order.status === "PENDING" ? (
+          <View style={styles.cancelWrap}>
+            {cancelError ? (
+              <Text style={styles.cancelError}>{cancelError}</Text>
+            ) : null}
+            <Button
+              title={cancelling ? "Cancelling…" : "Cancel order"}
+              variant="danger"
+              onPress={handleCancel}
+              loading={cancelling}
+              fullWidth
+            />
+            <Text style={styles.cancelHint}>
+              Orders can be cancelled while they are still pending approval.
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -187,4 +231,11 @@ const styles = StyleSheet.create({
   },
   totalLabel: { color: colors.text, fontSize: typography.bodySmall, fontWeight: '700' },
   totalValue: { color: colors.text, fontSize: typography.body, fontWeight: '800' },
+  cancelWrap: { gap: spacing.sm, marginTop: spacing.sm },
+  cancelError: { color: colors.danger, fontSize: typography.bodySmall, textAlign: 'center' },
+  cancelHint: {
+    color: colors.textMuted,
+    fontSize: typography.caption,
+    textAlign: 'center',
+  },
 });
