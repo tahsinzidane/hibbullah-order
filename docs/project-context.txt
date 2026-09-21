@@ -1,0 +1,329 @@
+===============================================================================
+HIBBULLAH — PROJECT CONTEXT FILE
+===============================================================================
+Expo (React Native) pharmacy delivery app. Google OAuth login via Supabase.
+Customer storefront + Admin dashboard in one codebase, separated by route groups.
+Money is handled as numbers; prices are snapshot into cart_items / order_items.
+
+===============================================================================
+1. REPOSITORY DIRECTORY STRUCTURE
+===============================================================================
+
+/
+├── AGENTS.md                     # Agent instructions (Expo v57 docs rule)
+├── app.json / eas.json           # Expo config
+├── package.json                  # deps: expo ~57, react-native 0.86, supabase, expo-router
+├── areas.json                    # Bangladesh Division/District/Upazila dataset
+├── mock-data.json                # Mock payload used by src/services/mockData.ts
+├── src/
+│   ├── app/                      # Expo Router file-based routes
+│   │   ├── _layout.tsx           # Root layout (providers)
+│   │   ├── index.tsx             # Entry redirect (auth gate)
+│   │   ├── (auth)/               # welcome, forgot-password, reset-password, _layout
+│   │   ├── (customer)/           # Customer area (route group, no path prefix)
+│   │   │   ├── _layout.tsx
+│   │   │   ├── (tabs)/           # index(home), products, cart, orders, account
+│   │   │   ├── products/         # categories, category/[categoryId],
+│   │   │   │                     #   manufacturers, manufacturer/[manufacturerId],
+│   │   │   │                     #   [productId], _layout
+│   │   │   ├── account/          # overview, profile, addresses, notifications, settings
+│   │   │   ├── address/edit.tsx  # delivery details form (creation; used for checkout)
+│   │   │   ├── checkout.tsx      # order placement + address picker modal
+│   │   │   ├── order/[orderId].tsx  # customer order detail
+│   │   │   ├── delivery-cycle.tsx
+│   │   │   └── search.tsx
+│   │   └── (admin)/              # Admin area (route group, no path prefix)
+│   │       ├── _layout.tsx
+│   │       ├── index.tsx         # dashboard
+│   │       ├── orders/           # index (list), [orderId] (detail + confirm/cancel)
+│   │       ├── customers/        # index, [customerId]
+│   │       ├── products/         # index, add, [productId]/index, [productId]/edit
+│   │       ├── inventory/        # index, adjustment, batches, expiry
+│   │       ├── reports/          # index, inventory, sales
+│   │       ├── audit/index.tsx
+│   │       └── returns/          # index, [returnId]
+│   ├── components/
+│   │   ├── common/   # Button, Input, Header, Modal, EmptyState, ErrorState,
+│   │   │             #   LoadingState, StatusBadge, SearchBar, ProfileGuard, etc.
+│   │   ├── cart/     # CartItem, CartSummary, QuantitySelector
+│   │   ├── orders/   # OrderCard, OrderStatus, OrderSummary
+│   │   ├── products/ # ProductCard, ProductImage, ProductPrice, DiscountBadge,
+│   │   │             #   CategoryCard, ManufacturerCard
+│   │   └── admin/    # AdminHeader, AdminDrawer, AdminNavigation, AdminStatCard,
+│   │                 #   AdminProductCard, AdminOrderCard, InventoryStatus, ProductForm
+│   ├── constants/    # colors, spacing, typography, sizes, shadows, config
+│   ├── hooks/        # useAuth, useUserProfile, useCart, useOrders, useProducts,
+│   │                 #   useProduct, useAdmin, useResponsive, useNotifications,
+│   │                 #   useDeliveryCycle, useUser
+│   ├── lib/          # supabase.ts (CLIENT - locked), env.ts, session.ts, storage.ts,
+│   │                 #   result.ts
+│   ├── providers/    # AppProviders, AuthProvider, CartProvider
+│   ├── screens/      # AddProductScreen (legacy standalone)
+│   ├── services/     # Domain service layer (see section 3)
+│   │   ├── admin/    # dashboardService, orderManagementService, customerService,
+│   │   │             #   adminProductService, inventoryService, batchService,
+│   │   │             #   reportService, auditService, returnService
+│   │   └── *.ts      # authService, profileService, addressService, cartService,
+│   │                 #   orderService, productService, categoryService,
+│   │                 #   manufacturerService, cloudinaryService, notificationService,
+│   │                 #   deliveryCycleService, mockData
+│   ├── types/       # database.ts (hand-rolled Supabase schema), order, cart, product,
+│   │                #   user, auth, category, manufacturer, customer, inventory,
+│   │                #   deliveryCycle, notification, audit, return
+│   └── utils/       # currency, date, formatting, validation, errorHandling
+├── supabase/migrations/         # SQL schema + RLS (see section 2)
+├── docs/                        # ai_coding_instructions.txt, backend-integration.md,
+│                                #   report.md, project-context.txt
+├── scripts/                     # reset-project.js
+└── android/                     # native android project (expo prebuild)
+
+================================================================================
+2. DATABASE SCHEMA STRUCTURE (Supabase / PostgreSQL, RLS enabled)
+================================================================================
+
+The TypeScript mirror lives in src/types/database.ts. All tables enable RLS.
+Admin access is gated by email match on admin_users via JWT:
+    exists (select 1 from public.admin_users where email = auth.jwt() ->> 'email')
+
+-- admin_users
+  id uuid PK, email text UNIQUE, created_at
+
+-- profiles                      (one row per auth user, auto-created by
+  id uuid PK -> auth.users       trigger handle_new_user on signup)
+  full_name text, phone_number text | null, created_at
+
+-- products
+  id uuid PK, name, brand, generic_name, category_id text,
+  manufacturer_id text, unit, description,
+  price numeric, original_price numeric | null, discount_percent numeric | null,
+  stock integer, image, primary_image, secondary_image, batch_number,
+  expiry_date text, is_active bool, is_featured bool, created_at
+  (NOTE: DB products row has an explicit `stock` column, not derived from batches
+   on the client)
+
+-- categories / manufacturers
+  id uuid PK, name, slug(+description) / name(+country)
+
+-- product_batches
+  id uuid PK, product_id, batch_number, quantity numeric,
+  expiry_date, purchase_cost numeric | null, status: active|expired|depleted
+
+-- carts                         (legacy; cart_items is the active table)
+  id, customer_id, updated_at
+
+-- cart_items                    (one row per user+product via unique index)
+  id uuid PK, user_id -> auth.users, user_email, product_id text,
+  product_name, product_image, quantity int > 0, unit_price numeric,
+  created_at, updated_at
+  UNIQUE (user_id, product_id)  -- backs client upsert ON CONFLICT
+
+-- delivery_cycles               (not yet created server-side; orders keep a
+  id, customer_id, status,       nullable delivery_cycle_id with NO FK)
+  started_at, closes_at
+
+-- orders                        (customer order card)
+  id uuid PK, order_number text, customer_id -> auth.users,
+  delivery_cycle_id uuid | null (no FK), status text default 'PENDING',
+  subtotal numeric, discount numeric, delivery_fee numeric, total numeric,
+  payment_method default 'CASH_ON_DELIVERY', address_id -> addresses | null,
+  created_at
+
+-- order_items                   (items belonging to an order)
+  id uuid PK, order_id -> orders (cascade), product_id -> products,
+  quantity int > 0, unit_price numeric, discount_percent numeric, total numeric
+  (No unique constraint on (order_id, product_id); merging increments in app code)
+
+-- addresses
+  id uuid PK, user_id -> auth.users (cascade), user_email,
+  label text, phone text, comment text | null,
+  division, district, upazila text, created_at, updated_at
+
+-- notifications / returns / audit_logs
+  standard notification, return-request, and actor/action audit rows.
+
+KEY MIGRATIONS:
+  20260914141707_remote_commit.sql  base schema, profiles trigger handle_new_user
+  20260918093343_remote_schema.sql  products table + public read policies
+  20260919000000_add_cart_items.sql cart_items + unique(user_id, product_id)
+  20260920000000_add_addresses.sql  addresses + owner CRUD policies
+  20260921000000_add_orders.sql     orders + order_items + PENDING flow policies
+  20260921010000_admin_read_policies.sql  admins read all profiles+addresses
+  20260921020000_order_merge_policies.sql admins+owners UPDATE on orders/order_items
+                                          (added for auto-merge feature)
+
+RLS note for order MERGE (customers):
+  - orders:      SELECT/INSERT/DELETE own; UPDATE own (merge migration)
+  - order_items: SELECT/INSERT own; UPDATE items of own orders (merge migration)
+  - addresses:   full owner CRUD; admins SELECT all
+
+================================================================================
+3. SERVICE LAYER WORKFLOWS
+================================================================================
+
+Data flow: UI screens -> custom hooks (src/hooks) -> services -> Supabase.
+Services map DB snake_case rows to camelCase domain types (src/types/*.ts).
+No screen reads mockData directly. env.useMock toggles Supabase vs mock store.
+
+orderService.ts  (src/services/orderService.ts)
+----------------
+  Types: OrderRow / OrderItemRow / AddressRow; public domain type Order (types/order).
+  helpers:
+    buildAddressText(address)         -> "upazila, district, division — phone"
+    buildItems(orderItemRows)         -> OrderItem[] (joins product names)
+    buildItemsForOrders(orderRows)    -> Map<orderId, OrderItem[]>
+    mapOrder(row, items, ctx)         -> domain Order (sets address string, phone,
+                                        comment from the linked address row)
+  Exported:
+    getOrders(customerId)             -> orders for one customer (newest first)
+    getAllOrders(status?)             -> all orders (admin)
+    getOrderById(orderId)             -> single loaded order detail (admin+customer)
+    submitOrder({ customerId, addressId })  CREATE + MERGE logic (below)
+    updateOrderStatus(id, status)     -> used by admin confirm/cancel
+
+  submitOrder WORKFLOW (address-aware auto-merge):
+    1. requireBackend(); validate customerId & addressId; load cart via getCartItems().
+    2. Look up an existing order that satisfies ALL THREE conditions:
+       (a) customer_id == current user, (b) status == 'PENDING', and
+       (c) address_id == chosen input.addressId
+       (.eq customer_id, .eq status PENDING, .eq address_id, order created_at
+       desc, limit 1).
+    3a. MERGE PATH (all 3 conditions met):
+        - mergeCartIntoOrder(orderId, cartItems):
+            fetch existing order_items for the order;
+            for each cart item: if product already on order -> increment
+              quantity (refresh unit_price/discount_percent/total), else insert
+              a new order_items row;
+            recomputeOrderTotals(orderId) from merged rows
+              (subtotal = SUM(unit_price*qty); discount = SUM((original - unit_price)*qty)
+               using products.original_price fallback unit_price; delivery = config.deliveryFee;
+               total = subtotal + delivery) and UPDATE the order.
+        - NO new order row is created; single order card preserved.
+    3b. CREATE PATH (no PENDING order for THAT address, OR a PENDING order exists
+        but with a DIFFERENT address_id):
+        - A COMPLETELY NEW order card is created (order_number HB-<ms>,
+          status PENDING, amounts from summarizeCart, its own address_id).
+        - Each existing PENDING order for another address remains untouched and
+          shows as its own separate PENDING card in the admin order list.
+        - Insert one order_items row per cart item. On item insert failure,
+          delete the freshly created order. clearCart().
+    4. Return getOrderById(orderRow.id).
+
+profileService.ts  (src/services/profileService.ts)
+-------------------
+  fetchUserProfile(userId)  -> UserProfile | null
+        Supabase profiles query mapped to { id, fullName, phoneNumber, role:'customer' }.
+         Falls back to mockData.users when env.useMock or query errors.
+  updateUserProfile(userId, input) -> UserProfile
+        Verifies the active auth session matches, upserts profiles
+        (full_name, phone_number) ON CONFLICT(id), returns mapped profile.
+
+cartService.ts  (src/services/cartService.ts)
+----------------
+  getCartItems()            -> CartItem[] from cart_items (snapshot product fields),
+                               falls back to store.cartItems when backend off.
+  getCartSummary()          -> summarizeCart(getCartItems())
+  summarizeCart(items)      -> { subtotal, discount, deliveryFee, total }
+                               (total = subtotal + deliveryFee; discount informational)
+  addToCart(productId, qty) -> validates stock/expiry, upserts cart_items
+                                ON CONFLICT (user_id, product_id).
+  updateCartQuantity / removeFromCart / removeCartItem / clearCart
+                               -> DB when present, else mutates mock store.
+
+addressService.ts  (src/services/addressService.ts)
+-------------------
+  getAddresses(userId)              -> AddressRow[] (created_at asc)
+  saveAddress(input)                -> single inserted AddressRow
+  getDeliveryDetailsStatus(userId)  -> { hasAddress, hasPhone, hasFullName, ready }
+                                       used by the checkout redirection guard.
+
+admin/orderManagementService.ts  -> thin wrapper: getAdminOrders, getAdminOrderById
+                                    (=getOrderById), confirmOrder/cancelOrder
+                                    (=updateOrderStatus CONFIRMED/CANCELLED).
+
+admin/* (dashboardService, customerService, inventoryService, batchService,
+reportService, auditService, returnService) -> read aggregates and admin CRUD.
+
+authService.ts -> Google OAuth session resolution; AuthProvider verifies admin via
+                  admin_users email match and force-overrides role.
+
+================================================================================
+4. KEY UI SCREENS, ROUTES & SHARED COMPONENTS
+================================================================================
+
+ROUTING (Expo Router v57, file-based):
+  "/"                          -> root _layout + index redirect
+  "/(auth)/*"                  -> welcome, forgot/reset password
+  "/(customer)/(tabs)"         -> HOME tab: index, products, cart, orders, account
+  "/(customer)/products/*"     -> categories, category/[categoryId], manufacturers,
+                                  manufacturer/[manufacturerId], [productId]
+  "/(customer)/checkout"       -> checkout screen (guard + address picker modal)
+  "/(customer)/address/edit"   -> delivery details form (reason=address_required
+                                  route params drive order-flow vs standalone mode)
+  "/(customer)/order/[orderId]"-> customer order detail
+  "/(admin)/orders/[orderId]"  -> admin order detail
+  "/(admin)/*"                 -> dashboard, orders, customers, products, inventory,
+                                  reports, audit, returns
+
+AUTH & GUARDS:
+  AuthProvider (src/providers/AuthProvider.tsx)
+    - syncs Supabase session, verifies admin_users email -> role override.
+    - dev-only mock admin session when EXPO_PUBLIC_USE_MOCK=true.
+  useUserProfile hook -> isProfileComplete = fullName && phoneNumber present.
+  Checkout guard: redirects to /address/edit?reason=address_required when
+    missing address or incomplete profile.
+
+CHECKOUT FLOW (src/app/(customer)/checkout.tsx):
+  1. Loads all saved addresses via getAddresses(userId); default = first.
+  2. "Place order" click:
+     - if addresses.length > 1 -> opens in-screen RN Modal listing every saved
+       address; tapping a row passes that addressId to submitOrder.
+     - if exactly one address -> submits directly.
+  3. submitWithAddress(addressId) calls orderService.submitOrder (auto-merges
+     into the existing PENDING order), then clears cart and navigates to orders tab.
+
+ADDRESS FORM (src/app/(customer)/address/edit.tsx):
+  - name/phone/label/comment + Bangladesh division/district/upazila pickers.
+  - Duplicate-label guard: before saveAddress it checks existing addresses and
+    blocks (Alert "An address with this label is already saved.") when the label
+    (case-insensitive) is already used.
+  - Standalone save success shows an auto-dismissing Toast
+    ("Address saved successfully!") via components/common/Toast.tsx, then
+    router.back() to the address list once the toast hides.
+  - When reason=address_required it also calls updateProfile + submitOrder after
+    saving; otherwise it just returns to the address list.
+
+ORDER CARDS / DETAILS:
+  customer OrderCard (components/orders/OrderCard.tsx) shows orderNumber, status,
+  item count, total. Order detail shows items + subtotal/discount/delivery/total
+  and customer/address info.
+  admin [orderId].tsx shows orderNumber, status badge, TOTAL, ADDRESS, PHONE,
+  COMMENT, and the full merged item list; Confirm/Cancel buttons call
+  orderManagementService (PENDING -> CONFIRMED / CANCELLED).
+
+SHARED COMMON COMPONENTS (src/components/*):
+  Button (primary/secondary/danger/ghost, loading, fullWidth)
+  Input, Header, Modal (generic alert dialog), Toast (auto-dismissing bottom
+  feedback), SearchBar, StatusBadge, EmptyState, ErrorState, LoadingState,
+  ProfileGuard, ImageUpload, AppLogo, FilterChip, CustomerNavigation.
+
+CONFIG & CONSTANTS:
+  config: appName "Hibbullah", currency KES, deliveryFee 150,
+          lowStockThreshold 10, expiryWarningDays 60.
+  colors/spacing/typography/sizes/shadows: design tokens under src/constants.
+
+MONEY / DATE HELPERS:
+  formatCurrency (utils/currency.ts), formatDate/formatDateTime (utils/date.ts),
+  normalizeError (utils/errorHandling.ts).
+
+LOCKED / DON'T-TOUCH FILES (per docs/ai_coding_instructions.txt):
+  src/lib/supabase.ts, src/services/authService.ts, src/lib/session.ts,
+  src/lib/storage.ts, src/providers/AuthProvider.tsx, src/types/database.ts
+  (treat as schema reference), .env, app.json, eas.json, package.json.
+  (note: supabase/migrations/* were historically locked; the merge feature added
+   an additive RLS migration 20260921020000_order_merge_policies.sql.)
+
+VERIFY COMMANDS:
+  npm run lint   (expo lint; repo has pre-existing warnings/errors unrelated
+                  to these changes)
+  npx tsc --noEmit
+================================================================================

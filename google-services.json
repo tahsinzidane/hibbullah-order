@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "883382143067",
+    "project_id": "tahsin-bf4a1",
+    "storage_bucket": "tahsin-bf4a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883382143067:android:c7e8f8721083bc3dded77e",
+        "android_client_info": {
+          "package_name": "com.hibbulllah.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmv4v6WS4_7rMTP4VQLacK_1Q1uMX1o1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883382143067:android:4009d38227dc5d40ded77e",
+        "android_client_info": {
+          "package_name": "com.icrmahin.hibbullahapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmv4v6WS4_7rMTP4VQLacK_1Q1uMX1o1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

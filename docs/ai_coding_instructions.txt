@@ -1,0 +1,41 @@
+hibbullah backend integration rules and instructions for ai coding agent
+
+purpose:
+this file contains strict guidelines and instructions for ai coding assistants (like cursor, windsurf, v0, etc.) working on the hibbullah expo / react native application to integrate supabase backend services.
+
+1. general code style & constraints
+- follow fedora linux compatible workflows if terminal operations are needed.
+- do not change any authentication or security configuration files listed below.
+- response and comments must be strictly in clean english without non-english text or unnecessary clutter in code blocks.
+- keep environment flags functional. when env.usemock is true, preserve mock data fallbacks. when false, call supabase services.
+
+2. restricted files (do not modify)
+the following files are strictly locked and must not be altered:
+- src/lib/supabase.ts (supabase client initialization and storage adapter)
+- src/services/authservice.ts (oauth flow and session resolution)
+- src/lib/session.ts (local session persistence)
+- src/lib/storage.ts (storage upload and url helpers)
+- src/providers/authprovider.tsx (session lifecycle and admin role gate)
+- supabase/migrations/* (deployed database schema and rls policies)
+- configuration files: .env, app.json, eas.json, package.json
+
+3. architectural patterns & mapping rules
+- data flow pattern: ui components -> custom hooks -> domain service layer -> supabase database / storage.
+- do not access mock data directly inside ui screens. all data fetching must go through service functions.
+- all backend responses must return camelcase domain objects matching src/types/*.ts contracts. do not leak database snake_case columns directly into react components.
+- map inventory status vocabularies cleanly between frontend (healthy, low, out_of_stock) and database (active, expired, depleted).
+- derive products.stock dynamically by calculating the sum of quantities across product_batches.
+
+4. database & storage integration workflow
+- database interaction: query and insert into supabase tables matching src/types/database.ts.
+- image storage: use storage helpers in src/lib/storage.ts to upload primary and secondary product images to the 'products' bucket. save the returned relative path into image_path.
+- user session & audit log: resolve actor_id dynamically from the authenticated session (auth.uid()) rather than using hardcoded admin names.
+- customer aggregations: compute ordercount and totalspent dynamically from orders when rendering customer lists and customer details.
+
+5. step-by-step implementation priority
+step 1: verify authentication and google oauth session flows against admin_users.
+step 2: implement product catalog reads and writes (products, categories, manufacturers).
+step 3: wire product image uploads through src/lib/storage.ts.
+step 4: implement inventory and batch management (product_batches, stock adjustments).
+step 5: implement order management and status mutation logic (orders, order_items, addresses, profiles).
+step 6: integrate customer profile aggregations, sales reports, and audit logs.
