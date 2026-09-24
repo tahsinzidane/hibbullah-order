@@ -1,7 +1,10 @@
 import { Pressable, StyleSheet, Text, type PressableProps, type ViewStyle } from "react-native";
 import colors from "../../constants/colors";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize, lineHeight } from "../../constants/typography";
+import { radius, layout, opacity } from "../../constants/sizes";
+import { compression } from "../../lib/motion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 type ButtonProps = PressableProps & {
   title: string;
@@ -20,6 +23,7 @@ export default function Button({
   style,
   ...props
 }: ButtonProps) {
+  const reducedMotion = useReducedMotion();
   const palette = {
     primary: { background: colors.primary, text: colors.white, ripple: "rgba(255,255,255,0.22)" },
     secondary: { background: colors.backgroundAlt, text: colors.primary, border: colors.border, ripple: colors.ripple.primary },
@@ -41,7 +45,8 @@ export default function Button({
           ? { borderWidth: 1, borderColor: palette.border }
           : null,
         fullWidth && styles.fullWidth,
-        pressed && styles.pressed,
+        pressed && styles.pressedOpacity,
+        pressed && !reducedMotion && styles.pressed,
         (disabled || loading) && styles.disabled,
         style,
       ]}
@@ -55,19 +60,23 @@ export default function Button({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 44,
-    paddingHorizontal: spacing.lg,
+    minHeight: layout.controlHeight,
+    paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
-    borderRadius: 8,
+    borderRadius: radius.pill,
+    gap: spacing.sm,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
   fullWidth: { width: "100%" },
-  pressed: { opacity: 0.82, transform: [{ scale: 0.98 }] },
-  disabled: { opacity: 0.5 },
+  pressedOpacity: { opacity: opacity.pressed },
+  pressed: { transform: [{ scale: compression.subtle }] },
+  disabled: { opacity: opacity.disabled },
   text: {
-    fontSize: typography.footnote,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.footnote,
+    lineHeight: fontSize.footnote * lineHeight.tight,
     letterSpacing: 0.2,
   },
 });

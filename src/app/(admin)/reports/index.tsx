@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AdminHeader from '../../../components/admin/AdminHeader';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { getInventoryReport, getSalesReport } from '../../../services/admin/reportService';
 import { formatCurrency } from '../../../utils/currency';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -82,11 +84,21 @@ const styles = StyleSheet.create({
   container: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.lg,
   },
-  label: { color: colors.textMuted, fontSize: typography.bodySmall },
-  value: { color: colors.text, fontWeight: '700', marginTop: spacing.xs, fontSize: typography.h2 },
+  label: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+  },
+  value: {
+    color: colors.text,
+    fontFamily: fontFamily.soraSemiBold,
+    marginTop: spacing.xs,
+    fontSize: fontSize.title2,
+  },
 });

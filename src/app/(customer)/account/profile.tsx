@@ -6,9 +6,10 @@ import Header from "../../../components/common/Header";
 import Input from "../../../components/common/Input";
 import Button from "../../../components/common/Button";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { useAuth } from "../../../hooks/useAuth";
 import { useUserProfile } from "../../../hooks/useUserProfile";
 import { normalizeError } from "../../../utils/errorHandling";
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.warningSoft,
     borderWidth: 1,
     borderColor: colors.warningBorder,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.xs,
   },
@@ -197,15 +198,16 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   warningIcon: {
-    fontSize: 18,
+    fontSize: fontSize.body,
   },
   warningTitle: {
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
     color: colors.warning,
   },
   warningText: {
-    fontSize: typography.footnote,
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsRegular,
     color: colors.textSecondary,
     lineHeight: 18,
   },
@@ -217,8 +219,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   missingBadgeLabel: {
-    fontSize: typography.caption,
-    fontWeight: "600",
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.textSecondary,
   },
   missingBadge: {
@@ -226,13 +228,13 @@ const styles = StyleSheet.create({
     borderColor: colors.dangerBorder,
     borderWidth: 1,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingVertical: spacing.xxs,
+    borderRadius: radius.sm,
   },
   missingBadgeText: {
-    fontSize: typography.caption,
-    fontWeight: "600",
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.danger,
   },
-  card: { gap: spacing.md },
+  card: { gap: spacing.lg },
 });

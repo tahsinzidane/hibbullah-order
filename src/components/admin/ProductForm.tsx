@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import sizes, { borderWidth } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import typography, { fontFamily, fontSize } from "../../constants/typography";
 import type { Category } from "../../types/category";
 import type { Manufacturer } from "../../types/manufacturer";
 import type { Product } from "../../types/product";
@@ -349,18 +349,18 @@ const styles = StyleSheet.create({
   form: {
     gap: spacing.md,
     backgroundColor: colors.backgroundAlt,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.hairline,
-    borderRadius: sizes.cardRadius,
+    borderRadius: sizes.borderRadius.lg,
     padding: spacing.lg,
   },
   sectionLabel: {
     color: colors.textMuted,
-    fontSize: typography.label,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.micro,
     letterSpacing: 0.8,
     textTransform: "uppercase",
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   row: {
     flexDirection: "row",
@@ -374,8 +374,8 @@ const styles = StyleSheet.create({
   group: { gap: spacing.sm },
   groupLabel: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
   },
   chips: { gap: spacing.sm, paddingRight: spacing.sm },
   imageSection: { gap: spacing.sm },
@@ -402,11 +402,19 @@ const styles = StyleSheet.create({
   switchText: { flex: 1, gap: 2 },
   switchLabel: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
   },
-  switchHint: { color: colors.textMuted, fontSize: typography.caption },
-  error: { color: colors.danger, fontSize: typography.caption },
+  switchHint: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+  },
+  error: {
+    color: colors.danger,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+  },
   footer: {
     padding: spacing.lg,
     paddingBottom: spacing.lg,

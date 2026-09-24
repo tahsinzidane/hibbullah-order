@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleSheet, type ImageStyle, type StyleProp } from "react-native";
 import colors from "../../constants/colors";
+import { layout } from "../../constants/sizes";
 
 const placeholder = require("@/assets/images/placeholders/product-placeholder.png");
 
@@ -30,7 +31,7 @@ function ProductImage({ uri, recyclingKey, style }: ProductImageProps) {
 const styles = StyleSheet.create({
   image: {
     width: "100%",
-    height: 140,
+    height: layout.productImage,
     backgroundColor: colors.background,
   },
 });

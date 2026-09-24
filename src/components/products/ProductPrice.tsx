@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize } from "../../constants/typography";
 import { formatCurrency } from "../../utils/currency";
 
 export default function ProductPrice({
@@ -22,11 +22,23 @@ export default function ProductPrice({
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
-  price: { color: colors.text, fontSize: typography.headline, fontWeight: "600" },
+  row: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+    flexWrap: "wrap",
+  },
+  price: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.callout,
+    lineHeight: fontSize.callout * 1.2,
+  },
   original: {
     color: colors.textMuted,
-    fontSize: typography.caption1,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.micro,
     textDecorationLine: "line-through",
   },
 });

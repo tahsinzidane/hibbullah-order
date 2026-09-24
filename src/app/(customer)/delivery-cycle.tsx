@@ -6,9 +6,11 @@ import EmptyState from '../../components/common/EmptyState';
 import Header from '../../components/common/Header';
 import LoadingState from '../../components/common/LoadingState';
 import StatusBadge from '../../components/common/StatusBadge';
-import colors from '../../constants/colors';
-import spacing from '../../constants/spacing';
-import typography from '../../constants/typography';
+import { colors } from '../../constants/colors';
+import { spacing } from '../../constants/spacing';
+import { radius } from '../../constants/sizes';
+import { shadows } from '../../constants/shadows';
+import { fontFamily, fontSize } from '../../constants/typography';
 import { useDeliveryCycle } from '../../hooks/useDeliveryCycle';
 import { formatCurrency } from '../../utils/currency';
 import { formatDateTime } from '../../utils/date';
@@ -67,13 +69,13 @@ export default function DeliveryCycleScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xxl },
-  card: { backgroundColor: colors.backgroundAlt, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: spacing.lg },
-  title: { color: colors.text, fontSize: typography.h3, fontWeight: '700', marginBottom: spacing.md },
-  meta: { color: colors.textMuted, marginTop: spacing.sm },
-  total: { marginTop: spacing.md, color: colors.text, fontWeight: '700' },
-  sectionTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '700', marginBottom: spacing.md },
+  card: { backgroundColor: colors.backgroundAlt, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, ...shadows.xs },
+  title: { color: colors.text, fontFamily: fontFamily.soraSemiBold, fontSize: fontSize.title3, marginBottom: spacing.md },
+  meta: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: fontSize.footnote, marginTop: spacing.sm },
+  total: { marginTop: spacing.md, color: colors.text, fontFamily: fontFamily.pjsBold, fontSize: fontSize.body },
+  sectionTitle: { color: colors.text, fontFamily: fontFamily.soraSemiBold, fontSize: fontSize.title3, marginBottom: spacing.md },
   row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  itemName: { color: colors.text, flex: 1 },
-  itemPrice: { color: colors.text },
-  emptyText: { color: colors.textMuted, fontSize: typography.bodySmall },
+  itemName: { color: colors.text, fontFamily: fontFamily.pjsRegular, fontSize: fontSize.body, flex: 1 },
+  itemPrice: { color: colors.text, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.body },
+  emptyText: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: fontSize.bodySmall },
 });

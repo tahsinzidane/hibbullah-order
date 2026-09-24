@@ -10,9 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import colors from "../../constants/colors";
-import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { colors } from "../../constants/colors";
+import { radius } from "../../constants/sizes";
+import { spacing } from "../../constants/spacing";
+import { fontFamily, fontSize } from "../../constants/typography";
+import { usePressFeedback } from "../../lib/motion";
 
 type ImageUploadProps = {
   label: string;
@@ -37,6 +39,7 @@ export default function ImageUpload({
   error,
 }: ImageUploadProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const feedback = usePressFeedback();
 
   const pickFromLibrary = async () => {
     setMenuOpen(false);
@@ -137,7 +140,7 @@ export default function ImageUpload({
         <Pressable
           style={({ pressed }) => [
             styles.emptyState,
-            pressed && styles.pressed,
+            feedback(pressed),
             !!error && styles.emptyStateError,
           ]}
           onPress={() => setMenuOpen(!menuOpen)}
@@ -188,12 +191,12 @@ const styles = StyleSheet.create({
   wrapper: { gap: spacing.xs },
   label: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
   },
   previewContainer: {
     position: "relative",
-    borderRadius: 8,
+    borderRadius: radius.sm,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: colors.border,
@@ -219,17 +222,17 @@ const styles = StyleSheet.create({
   previewActionBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
   },
   previewActionText: {
-    fontSize: typography.label,
-    fontWeight: "600",
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.text,
   },
   removeActionBtn: {
@@ -241,7 +244,7 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     aspectRatio: 1,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
     borderStyle: "dashed",
@@ -254,12 +257,13 @@ const styles = StyleSheet.create({
     borderColor: colors.danger,
   },
   emptyText: {
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.text,
   },
   emptyHint: {
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
     color: colors.textMuted,
   },
   dropdown: {
@@ -281,11 +285,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   dropdownText: {
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.text,
   },
   hairline: { height: 1, backgroundColor: colors.borderSoft },
-  pressed: { opacity: 0.6 },
-  error: { color: colors.danger, fontSize: typography.caption },
+  error: {
+    color: colors.danger,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
 });

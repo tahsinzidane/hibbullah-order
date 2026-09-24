@@ -7,9 +7,11 @@ import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import SearchBar from '../../../components/common/SearchBar';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { getCustomers } from '../../../services/admin/customerService';
 import type { CustomerRecord } from '../../../types/customer';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -90,12 +92,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.md,
   },
-  name: { color: colors.text, fontSize: typography.body, fontWeight: '700' },
-  info: { color: colors.textMuted, fontSize: typography.caption },
-  link: { color: colors.primary, fontWeight: '700' },
+  name: {
+    color: colors.text,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
+  },
+  info: {
+    color: colors.textMuted,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
+  link: { color: colors.primary, fontFamily: fontFamily.pjsBold },
 });

@@ -18,12 +18,14 @@ import EmptyState from "../../components/common/EmptyState";
 import LoadingState from "../../components/common/LoadingState";
 import StatusBadge from "../../components/common/StatusBadge";
 import config from "../../constants/config";
-import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
-import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { colors } from "../../constants/colors";
+import { shadows } from "../../constants/shadows";
+import { radius } from "../../constants/sizes";
+import { spacing } from "../../constants/spacing";
+import { fontFamily, fontSize, letterSpacing } from "../../constants/typography";
 import { useAdmin } from "../../hooks/useAdmin";
 import { useAuth } from "../../hooks/useAuth";
+import { usePressFeedback } from "../../lib/motion";
 import { formatCurrency } from "../../utils/currency";
 import { formatShortDate } from "../../utils/date";
 
@@ -122,6 +124,7 @@ export default function AdminDashboardScreen() {
 
   const isCompact = width < 768;
   const isWide = width >= 1024;
+  const feedback = usePressFeedback();
 
   if (loading || !dashboard) return <LoadingState label="Loading dashboard" />;
 
@@ -267,7 +270,7 @@ export default function AdminDashboardScreen() {
                   <Pressable
                     style={({ pressed }) => [
                       styles.listRow,
-                      pressed && styles.pressed,
+                      feedback(pressed),
                     ]}
                     android_ripple={{ color: colors.ripple.primary }}
                     accessibilityRole="button"
@@ -309,7 +312,7 @@ export default function AdminDashboardScreen() {
                 style={({ pressed }) => [
                   styles.actionTile,
                   !isCompact && styles.actionTileWide,
-                  pressed && styles.pressed,
+                  feedback(pressed),
                 ]}
                 android_ripple={{ color: colors.ripple.primary }}
                 accessibilityRole="button"
@@ -350,7 +353,7 @@ export default function AdminDashboardScreen() {
                       <Pressable
                         style={({ pressed }) => [
                           styles.listRow,
-                          pressed && styles.pressed,
+                          feedback(pressed),
                         ]}
                         android_ripple={{ color: colors.ripple.primary }}
                         accessibilityRole="button"
@@ -409,7 +412,7 @@ export default function AdminDashboardScreen() {
                         <Pressable
                           style={({ pressed }) => [
                             styles.listRow,
-                            pressed && styles.pressed,
+                            feedback(pressed),
                           ]}
                           android_ripple={{ color: colors.ripple.primary }}
                           accessibilityRole="button"
@@ -504,21 +507,21 @@ const styles = StyleSheet.create({
   },
   sectionIndex: {
     color: colors.textMuted,
-    fontSize: typography.caption2,
-    fontWeight: "700",
-    letterSpacing: 0.8,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: typography.footnote,
-    fontWeight: "700",
-    letterSpacing: typography.letterSpacing.tight,
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.tight,
   },
   sectionRule: { flex: 1, height: 1, backgroundColor: colors.borderLight },
   sectionLink: {
     color: colors.primary,
-    fontSize: typography.footnote,
-    fontWeight: "600",
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsSemiBold,
   },
 
   grid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
@@ -531,9 +534,10 @@ const styles = StyleSheet.create({
     flexBasis: "46%",
     minHeight: 68,
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.md,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.borderLight,
+    ...shadows.xs,
     padding: spacing.md,
     gap: spacing.xs,
     justifyContent: "center",
@@ -542,7 +546,7 @@ const styles = StyleSheet.create({
   iconTile: {
     width: 28,
     height: 28,
-    borderRadius: sizes.borderRadius.sm,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.borderLight,
     backgroundColor: colors.background,
@@ -551,10 +555,14 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     color: colors.text,
-    fontSize: typography.footnote,
-    fontWeight: "600",
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsSemiBold,
   },
-  actionMeta: { color: colors.textMuted, fontSize: typography.caption2 },
+  actionMeta: {
+    color: colors.textMuted,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
 
   body: { flexDirection: "column", gap: spacing.lg },
   bodyWide: { flexDirection: "row", alignItems: "flex-start" },
@@ -564,9 +572,10 @@ const styles = StyleSheet.create({
 
   panel: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.md,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.borderLight,
+    ...shadows.xs,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
@@ -581,36 +590,40 @@ const styles = StyleSheet.create({
   listMain: { flex: 1, gap: spacing.xs },
   listTitle: {
     color: colors.text,
-    fontSize: typography.footnote,
-    fontWeight: "700",
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsBold,
   },
-  listMeta: { color: colors.textMuted, fontSize: typography.caption2 },
+  listMeta: {
+    color: colors.textMuted,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
   rowDate: {
     color: colors.textMuted,
-    fontSize: typography.caption2,
-    letterSpacing: 0.2,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+    letterSpacing: letterSpacing.wide,
   },
   actionChip: {
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: sizes.borderRadius.sm,
+    borderRadius: radius.sm,
     backgroundColor: colors.background,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
   actionChipText: {
     color: colors.primary,
-    fontSize: typography.caption2,
-    fontWeight: "700",
-    letterSpacing: 0.4,
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
   },
   inlineNote: { paddingVertical: spacing.md, alignItems: "flex-start" },
   inlineNoteText: {
     color: colors.success,
-    fontSize: typography.footnote,
-    fontWeight: "600",
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsSemiBold,
   },
   hairline: { height: 1, backgroundColor: colors.borderSoft },
-  pressed: { opacity: 0.6, transform: [{ scale: 0.99 }] },
 });

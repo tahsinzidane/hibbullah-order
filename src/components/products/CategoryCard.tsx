@@ -1,8 +1,11 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import sizes, { borderWidth } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import shadows from "../../constants/shadows";
+import { fontFamily, fontSize } from "../../constants/typography";
+import { compression } from "../../lib/motion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import type { Category } from "../../types/category";
 
 export default function CategoryCard({
@@ -12,8 +15,12 @@ export default function CategoryCard({
   category: Category;
   onPress?: () => void;
 }) {
+  const reducedMotion = useReducedMotion();
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && !reducedMotion && styles.pressed]}
+      onPress={onPress}
+    >
       <Text style={styles.name}>{category.name}</Text>
       <Text style={styles.meta}>{category.productCount ?? 0} products</Text>
     </Pressable>
@@ -23,11 +30,25 @@ export default function CategoryCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.cardRadius,
-    borderWidth: 1,
+    borderRadius: sizes.borderRadius.lg,
+    borderWidth: borderWidth.thin,
     borderColor: colors.hairline,
     padding: spacing.lg,
+    ...shadows.xs,
   },
-  name: { color: colors.text, fontSize: typography.body, fontWeight: "600" },
-  meta: { color: colors.textMuted, fontSize: typography.caption, marginTop: 4 },
+  name: {
+    color: colors.text,
+    fontFamily: fontFamily.soraMedium,
+    fontSize: fontSize.body,
+  },
+  meta: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+    marginTop: spacing.xs,
+  },
+  pressed: {
+    transform: [{ scale: compression.subtle }],
+    opacity: 0.92,
+  },
 });

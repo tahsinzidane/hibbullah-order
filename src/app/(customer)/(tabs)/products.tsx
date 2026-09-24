@@ -16,13 +16,14 @@ import SearchBar from "../../../components/common/SearchBar";
 import ProductCard from "../../../components/products/ProductCard";
 import colors from "../../../constants/colors";
 import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import {
   mockCategories,
   mockManufacturers,
 } from "../../../services/mockData";
 import { useCart } from "../../../hooks/useCart";
 import { useProducts } from "../../../hooks/useProducts";
+import { useResponsive } from "../../../hooks/useResponsive";
 import type { Product } from "../../../types/product";
 import { normalizeError } from "../../../utils/errorHandling";
 
@@ -35,6 +36,7 @@ export default function CustomerProductsScreen() {
     { kind: "success" | "error"; message: string } | null
   >(null);
   const { addItem } = useCart();
+  const { columns } = useResponsive();
   const {
     data: products,
     loading,
@@ -81,20 +83,26 @@ export default function CustomerProductsScreen() {
       <Header title="Products" subtitle="Browse by category and manufacturer" />
       <FlatList
         data={filteredProducts}
+        key={columns}
+        numColumns={columns}
         contentContainerStyle={styles.container}
+        columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={(product) =>
-              router.push({
-                pathname: "/(customer)/products/[productId]",
-                params: { productId: product.id },
-              })
-            }
-            onAddToCart={handleAddToCart}
-            addToCartLoading={addingId === item.id}
-          />
+          <View style={styles.gridItem}>
+            <ProductCard
+              product={item}
+              compact
+              onPress={(product) =>
+                router.push({
+                  pathname: "/(customer)/products/[productId]",
+                  params: { productId: product.id },
+                })
+              }
+              onAddToCart={handleAddToCart}
+              addToCartLoading={addingId === item.id}
+            />
+          </View>
         )}
         ListHeaderComponent={
           <View>
@@ -190,11 +198,17 @@ export default function CustomerProductsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  container: {
+    padding: spacing.lg,
+    paddingBottom: spacing.xxl,
+    rowGap: spacing.lg,
+  },
+  gridRow: { gap: spacing.lg },
+  gridItem: { flex: 1 },
   label: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.bodySmall,
     marginTop: spacing.xl,
     marginBottom: spacing.sm,
   },
@@ -203,12 +217,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundAlt,
     borderColor: colors.border,
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
   },
-  chipText: { color: colors.text, fontSize: typography.bodySmall, fontWeight: "600" },
+  chipText: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.footnote,
+  },
   chipSelected: {
     backgroundColor: colors.primarySoft,
     borderColor: colors.primary,
@@ -216,13 +234,14 @@ const styles = StyleSheet.create({
   chipSelectedText: { color: colors.primary },
   resultText: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
     marginTop: spacing.md,
     marginBottom: spacing.md,
   },
   feedback: {
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
     marginTop: spacing.md,
   },
   feedbackSuccess: { color: colors.success },

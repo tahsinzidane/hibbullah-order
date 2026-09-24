@@ -7,9 +7,11 @@ import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import StatusBadge from '../../../components/common/StatusBadge';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { getReturnById } from '../../../services/admin/returnService';
 import type { ReturnRequest } from '../../../types/return';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -90,12 +92,23 @@ const styles = StyleSheet.create({
   errorWrap: { padding: spacing.lg },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.lg,
   },
-  label: { color: colors.text, fontSize: typography.bodySmall, fontWeight: '700', marginTop: spacing.md },
-  value: { color: colors.textMuted, fontSize: typography.body, marginTop: spacing.xs },
+  label: {
+    color: colors.text,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsBold,
+    marginTop: spacing.md,
+  },
+  value: {
+    color: colors.textMuted,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsRegular,
+    marginTop: spacing.xs,
+  },
   badgeRow: { marginTop: spacing.md },
 });

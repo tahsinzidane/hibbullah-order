@@ -7,8 +7,11 @@ import Header from "../../../components/common/Header";
 import Input from "../../../components/common/Input";
 import Button from "../../../components/common/Button";
 import Toast from "../../../components/common/Toast";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { layout, radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { useAuth } from "../../../providers/AuthProvider";
 import { useUserProfile } from "../../../hooks/useUserProfile";
 import { useCart } from "../../../hooks/useCart";
@@ -328,31 +331,39 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     paddingBottom: spacing.xxl,
   },
-  form: { gap: spacing.md },
+  form: { gap: spacing.lg },
   fieldContainer: { gap: spacing.xs },
-  label: { fontSize: 14, color: colors.text, fontWeight: "500" },
+  label: {
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+    color: colors.text,
+  },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: colors.border || "#ccc",
-    borderRadius: 8,
-    backgroundColor: "#fff",
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.backgroundAlt,
     overflow: "hidden",
+    minHeight: layout.controlHeightLarge,
+    justifyContent: "center",
+    ...shadows.xs,
   },
   warningBanner: {
     backgroundColor: colors.warningSoft,
     borderWidth: 1,
     borderColor: colors.warningBorder,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.xs,
   },
   warningTitle: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.body,
     color: colors.warning,
   },
   warningText: {
-    fontSize: 13,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.footnote,
     color: colors.textSecondary,
     lineHeight: 18,
   },

@@ -6,7 +6,7 @@ import AdminHeader from "../../../components/admin/AdminHeader";
 import ProductForm from "../../../components/admin/ProductForm";
 import ErrorState from "../../../components/common/ErrorState";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
+import { colors } from "../../../constants/colors";
 import { createProduct } from "../../../services/admin/adminProductService";
 import { getCategories } from "../../../services/categoryService";
 import { getManufacturers } from "../../../services/manufacturerService";

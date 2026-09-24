@@ -10,9 +10,11 @@ import ProductCard from "../../components/products/ProductCard";
 import colors from "../../constants/colors";
 import spacing from "../../constants/spacing";
 import { useProducts } from "../../hooks/useProducts";
+import { useResponsive } from "../../hooks/useResponsive";
 
 export default function CustomerSearchScreen() {
   const [query, setQuery] = useState("");
+  const { columns } = useResponsive();
   const {
     data: products,
     loading,
@@ -40,18 +42,24 @@ export default function CustomerSearchScreen() {
       <Header title="Search" onBack={() => router.back()} />
       <FlatList
         data={results}
+        key={columns}
+        numColumns={columns}
         contentContainerStyle={styles.container}
+        columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={(product) =>
-              router.push({
-                pathname: "/(customer)/products/[productId]",
-                params: { productId: product.id },
-              })
-            }
-          />
+          <View style={styles.gridItem}>
+            <ProductCard
+              product={item}
+              compact
+              onPress={(product) =>
+                router.push({
+                  pathname: "/(customer)/products/[productId]",
+                  params: { productId: product.id },
+                })
+              }
+            />
+          </View>
         )}
         ListHeaderComponent={
           <SearchBar
@@ -78,7 +86,13 @@ export default function CustomerSearchScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  container: {
+    padding: spacing.lg,
+    paddingBottom: spacing.xxl,
+    rowGap: spacing.lg,
+  },
+  gridRow: { gap: spacing.lg },
+  gridItem: { flex: 1 },
   empty: { alignItems: "center", paddingVertical: spacing.xxl },
   emptyText: { color: colors.textMuted },
 });

@@ -16,9 +16,11 @@ import EmptyState from "../../components/common/EmptyState";
 import Header from "../../components/common/Header";
 import Input from "../../components/common/Input";
 import LoadingState from "../../components/common/LoadingState";
-import colors from "../../constants/colors";
-import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { colors } from "../../constants/colors";
+import { spacing } from "../../constants/spacing";
+import { radius } from "../../constants/sizes";
+import { shadows } from "../../constants/shadows";
+import { fontFamily, fontSize } from "../../constants/typography";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { useUserProfile } from "../../hooks/useUserProfile";
@@ -360,37 +362,40 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: {
     padding: spacing.lg,
-    gap: spacing.lg,
+    gap: spacing.md,
     paddingBottom: spacing.xxl,
   },
   summaryBox: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
+    ...shadows.xs,
   },
   addressBox: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
     gap: spacing.xs,
+    ...shadows.xs,
   },
   addressLabel: {
     color: colors.text,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
   },
   addressText: {
     color: colors.textMuted,
-    fontSize: typography.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title3,
     marginBottom: spacing.md,
   },
   row: {
@@ -404,16 +409,30 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     marginTop: spacing.md,
   },
-  totalText: { color: colors.text, fontSize: typography.body, fontWeight: "800" },
+  totalText: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.body,
+  },
   paymentBox: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
+    ...shadows.xs,
   },
-  paymentMethod: { color: colors.textMuted, fontSize: typography.bodySmall },
-  error: { color: colors.danger, fontSize: typography.bodySmall, textAlign: "center" },
+  paymentMethod: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
+  error: {
+    color: colors.danger,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+    textAlign: "center",
+  },
   centerContainer: {
     flex: 1,
     alignItems: "center",
@@ -423,7 +442,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: colors.textMuted,
-    fontSize: typography.footnote,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.footnote,
   },
   modalBackdrop: {
     flex: 1,
@@ -433,9 +453,12 @@ const styles = StyleSheet.create({
   },
   modalCard: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.xl,
     padding: spacing.xl,
     gap: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.lg,
   },
   modalList: {
     maxHeight: 360,
@@ -443,10 +466,11 @@ const styles = StyleSheet.create({
   addressOption: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.xxs,
     marginBottom: spacing.md,
+    backgroundColor: colors.background,
   },
   addressOptionSelected: {
     borderColor: colors.primary,
@@ -454,15 +478,17 @@ const styles = StyleSheet.create({
   },
   addressOptionLabel: {
     color: colors.text,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
   },
   addressOptionText: {
     color: colors.textSecondary,
-    fontSize: typography.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
   },
   addressOptionMuted: {
     color: colors.textMuted,
-    fontSize: typography.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
   },
 });

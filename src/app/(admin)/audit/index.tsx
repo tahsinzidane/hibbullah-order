@@ -5,9 +5,15 @@ import AdminHeader from '../../../components/admin/AdminHeader';
 import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import {
+  fontFamily,
+  fontSize,
+  lineHeight,
+} from '../../../constants/typography';
 import { getAuditLog } from '../../../services/admin/auditService';
 import type { AuditEntry } from '../../../types/audit';
 import { formatDateTime } from '../../../utils/date';
@@ -63,11 +69,22 @@ const styles = StyleSheet.create({
   container: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.lg,
   },
-  action: { color: colors.text, fontSize: typography.body, fontWeight: '700' },
-  meta: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.xs },
+  action: {
+    color: colors.text,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
+  },
+  meta: {
+    color: colors.textMuted,
+    fontSize: fontSize.footnote,
+    fontFamily: fontFamily.pjsRegular,
+    lineHeight: fontSize.footnote * lineHeight.relaxed,
+    marginTop: spacing.xs,
+  },
 });

@@ -2,7 +2,7 @@ import { useWindowDimensions } from "react-native";
 
 export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 
-const BREAKPOINTS = {
+export const BREAKPOINTS = {
   xs: 0,
   sm: 375,
   md: 576,
@@ -11,7 +11,7 @@ const BREAKPOINTS = {
   xxl: 1280,
 } as const;
 
-const COLUMNS = {
+export const COLUMNS = {
   xs: 1,
   sm: 1,
   md: 2,
@@ -20,7 +20,7 @@ const COLUMNS = {
   xxl: 5,
 } as const;
 
-const SIDEBAR_WIDTH = {
+export const SIDEBAR_WIDTH = {
   lg: 260,
   xl: 280,
   xxl: 300,

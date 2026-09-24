@@ -7,9 +7,11 @@ import Button from "../../../components/common/Button";
 import EmptyState from "../../../components/common/EmptyState";
 import Header from "../../../components/common/Header";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { useAuth } from "../../../hooks/useAuth";
 import { useCart } from "../../../hooks/useCart";
 import { supabase } from "../../../lib/supabase";
@@ -150,13 +152,18 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
     gap: spacing.lg,
   },
-  error: { color: colors.danger, fontSize: typography.bodySmall },
+  error: {
+    color: colors.danger,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
   summaryBox: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
+    ...shadows.xs,
   },
   summaryRow: {
     flexDirection: "row",
@@ -169,8 +176,20 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  totalText: { color: colors.text, fontSize: typography.body, fontWeight: "800" },
-  summaryLabel: { color: colors.text, fontSize: typography.bodySmall },
-  summaryValue: { color: colors.text, fontSize: typography.bodySmall },
+  totalText: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.body,
+  },
+  summaryLabel: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
+  summaryValue: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+  },
   actions: { gap: spacing.md },
 });

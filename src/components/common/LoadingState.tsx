@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import AppLogo from './AppLogo';
 import colors from '../../constants/colors';
 import spacing from '../../constants/spacing';
-import typography from '../../constants/typography';
+import { fontFamily, fontSize } from '../../constants/typography';
 
 type LoadingStateProps = {
   label?: string;
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: colors.textMuted,
-    fontSize: typography.footnote,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.footnote,
   },
 });

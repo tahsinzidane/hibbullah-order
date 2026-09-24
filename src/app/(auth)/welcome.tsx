@@ -6,7 +6,7 @@ import Button from "../../components/common/Button";
 import AppLogo from "../../components/common/AppLogo";
 import colors from "../../constants/colors";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize, letterSpacing } from "../../constants/typography";
 import { authService } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -46,7 +46,7 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.brandWrap}>
-          <AppLogo size={88} />
+          <AppLogo size={80} />
           <Text style={styles.brand}>Hibbullah</Text>
         </View>
 
@@ -83,23 +83,33 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: spacing.xxl,
-    gap: spacing.xxl,
+    gap: spacing.lg,
   },
   brandWrap: { alignItems: "center", gap: spacing.md },
-  brand: { color: colors.text, fontSize: typography.h3, fontWeight: "600" },
+  brand: {
+    color: colors.text,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.body,
+  },
   hero: { gap: spacing.md },
   title: {
     color: colors.text,
-    fontSize: typography.title,
-    fontWeight: "800",
+    fontFamily: fontFamily.soraBold,
+    fontSize: fontSize.largeTitle,
+    letterSpacing: letterSpacing.tight,
     lineHeight: 36,
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: typography.body,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.body,
     lineHeight: 26,
   },
   featureList: { gap: spacing.sm },
-  feature: { color: colors.text, fontSize: typography.bodySmall },
+  feature: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
   actions: { gap: spacing.md },
 });

@@ -3,10 +3,13 @@ import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/common/Header";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
 import { useAuth } from "../../../hooks/useAuth";
+import { usePressFeedback } from "../../../lib/motion";
 
 type IconName = SymbolViewProps["name"];
 
@@ -84,6 +87,7 @@ const SECTIONS: {
 export default function CustomerAccountDashboard() {
   const { user, signOut } = useAuth();
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : "H";
+  const feedback = usePressFeedback();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -124,7 +128,7 @@ export default function CustomerAccountDashboard() {
                   <Pressable
                     style={({ pressed }) => [
                       styles.row,
-                      pressed && styles.pressed,
+                      feedback(pressed),
                     ]}
                     android_ripple={{ color: RIPPLE }}
                     accessibilityRole="button"
@@ -158,7 +162,7 @@ export default function CustomerAccountDashboard() {
         ))}
 
         <Pressable
-          style={({ pressed }) => [styles.signOut, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.signOut, feedback(pressed)]}
           android_ripple={{ color: RIPPLE }}
           accessibilityRole="button"
           accessibilityLabel="Sign out"
@@ -188,39 +192,40 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundAlt,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    ...shadows.xs,
   },
   avatar: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: radius.pill,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     color: colors.white,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
   },
   identityText: { flex: 1, gap: spacing.xs },
   eyebrow: {
     color: colors.textMuted,
-    fontSize: typography.label,
-    fontWeight: "700",
-    letterSpacing: 0.8,
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
   },
   userName: {
     color: colors.text,
-    fontSize: typography.body,
-    fontWeight: "700",
-    letterSpacing: -0.1,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsSemiBold,
   },
   userEmail: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
   },
   sectionHead: {
     flexDirection: "row",
@@ -230,23 +235,23 @@ const styles = StyleSheet.create({
   },
   sectionIndex: {
     color: colors.textMuted,
-    fontSize: typography.label,
-    fontWeight: "700",
-    letterSpacing: 0.8,
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: "700",
-    letterSpacing: -0.1,
+    fontSize: fontSize.title3,
+    fontFamily: fontFamily.soraSemiBold,
   },
   sectionRule: { flex: 1, height: 1, backgroundColor: colors.border },
   panel: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 8,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
+    ...shadows.xs,
   },
   row: {
     flexDirection: "row",
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
   iconTile: {
     width: 28,
     height: 28,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
@@ -268,12 +273,13 @@ const styles = StyleSheet.create({
   rowText: { flex: 1, gap: spacing.xs },
   rowLabel: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsMedium,
   },
   rowMeta: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
   },
   hairline: { height: 1, backgroundColor: colors.borderSoft },
   signOut: {
@@ -283,17 +289,16 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.backgroundAlt,
     paddingVertical: spacing.md,
     minHeight: 44,
     marginTop: spacing.sm,
+    ...shadows.xs,
   },
   signOutText: {
     color: colors.primary,
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
   },
-  // Press feedback: fading + a subtle scale reads as tactile without animation.
-  pressed: { opacity: 0.6, transform: [{ scale: 0.99 }] },
 });

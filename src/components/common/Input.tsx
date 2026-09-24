@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
+import { StyleSheet, Text, TextInput, View, type TextInputProps, type TextStyle } from "react-native";
 import colors from "../../constants/colors";
 import sizes from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize, lineHeight } from "../../constants/typography";
+import shadows from "../../constants/shadows";
 
 type InputProps = TextInputProps & {
   label?: string;
@@ -38,28 +39,37 @@ const styles = StyleSheet.create({
   wrapper: { gap: spacing.xs },
   label: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
-    letterSpacing: typography.letterSpacingBody,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+    lineHeight: fontSize.bodySmall * lineHeight.normal,
+    letterSpacing: 0,
   },
   input: {
     minHeight: sizes.inputHeight,
     borderWidth: 1,
-    borderColor: colors.hairline,
-    borderRadius: sizes.borderRadius.md,
+    borderColor: colors.border,
+    borderRadius: sizes.radius.md,
     backgroundColor: colors.backgroundAlt,
     paddingHorizontal: spacing.lg,
     color: colors.text,
-    fontSize: typography.body,
+    fontFamily: fontFamily.regular,
+    fontSize: fontSize.body,
+    lineHeight: fontSize.body * lineHeight.normal,
+    ...(shadows.xs as TextStyle),
   },
   textArea: {
     minHeight: 120,
-    borderRadius: sizes.borderRadius.xl,
+    borderRadius: sizes.radius.xl,
     textAlignVertical: "top",
     paddingTop: spacing.lg,
   },
   inputError: { borderColor: colors.danger },
-  inputFocused: { borderColor: colors.primary, borderWidth: 2 },
+  inputFocused: { borderColor: colors.borderFocus, borderWidth: 2 },
   inputDisabled: { backgroundColor: colors.background, color: colors.textMuted },
-  error: { color: colors.danger, fontSize: typography.caption },
+  error: {
+    color: colors.danger,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+    lineHeight: fontSize.caption * lineHeight.normal,
+  },
 });

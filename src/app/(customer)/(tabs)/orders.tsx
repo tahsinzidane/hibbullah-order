@@ -7,8 +7,8 @@ import ErrorState from "../../../components/common/ErrorState";
 import Header from "../../../components/common/Header";
 import LoadingState from "../../../components/common/LoadingState";
 import OrderCard from "../../../components/orders/OrderCard";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
 import { useOrders } from "../../../hooks/useOrders";
 import type { Order } from "../../../types/order";
 
@@ -62,5 +62,5 @@ export default function CustomerOrdersScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  container: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
 });

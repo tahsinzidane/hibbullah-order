@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-nati
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useAuth } from "../../../hooks/useAuth";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -126,12 +128,13 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: {
-    fontSize: typography.h2,
-    fontWeight: "700",
+    fontSize: fontSize.title1,
+    fontFamily: fontFamily.soraSemiBold,
     color: colors.text,
   },
   subtitle: {
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
     color: colors.textMuted,
   },
   userCard: {
@@ -141,42 +144,44 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundAlt,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    ...shadows.xs,
   },
   avatar: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: radius.pill,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     color: colors.white,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
   },
   userInfo: {
     flex: 1,
-    gap: 2,
+    gap: spacing.xxs,
   },
   userName: {
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsSemiBold,
     color: colors.text,
   },
   userEmail: {
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
     color: colors.textMuted,
   },
   section: {
     gap: spacing.sm,
   },
   sectionLabel: {
-    fontSize: typography.label,
-    fontWeight: "700",
-    letterSpacing: 0.8,
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
     color: colors.textMuted,
     textTransform: "uppercase",
   },
@@ -184,11 +189,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundAlt,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: radius.md,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    minHeight: 48,
+    minHeight: 44,
     justifyContent: "center",
+    ...shadows.xs,
   },
   optionRow: {
     flexDirection: "row",
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
   optionIcon: {
     width: 32,
     height: 32,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
@@ -207,28 +213,30 @@ const styles = StyleSheet.create({
   },
   optionContent: { flex: 1 },
   optionText: {
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsMedium,
     color: colors.text,
   },
   optionHint: {
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
     color: colors.textMuted,
     marginTop: spacing.xs,
   },
   logoutButton: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.backgroundAlt,
     paddingVertical: spacing.md,
     alignItems: "center",
     minHeight: 44,
     marginTop: spacing.sm,
+    ...shadows.xs,
   },
   logoutText: {
     color: colors.danger,
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
   },
 });

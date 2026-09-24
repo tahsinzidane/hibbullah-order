@@ -5,7 +5,8 @@ import { router } from 'expo-router';
 import Header from '../../../components/common/Header';
 import colors from '../../../constants/colors';
 import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { radius } from '../../../constants/sizes';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { mockManufacturers } from '../../../services/mockData';
 
 export default function CustomerManufacturersScreen() {
@@ -25,6 +26,15 @@ export default function CustomerManufacturersScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, gap: spacing.md },
-  card: { backgroundColor: colors.backgroundAlt, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, color: colors.text, fontSize: typography.body, fontWeight: '600' },
+  container: { padding: spacing.lg, gap: spacing.lg },
+  card: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    color: colors.text,
+    fontFamily: fontFamily.soraMedium,
+    fontSize: fontSize.body,
+  },
 });

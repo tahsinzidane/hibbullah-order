@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import colors from '../../constants/colors';
+import { radius } from '../../constants/sizes';
 import spacing from '../../constants/spacing';
-import typography from '../../constants/typography';
+import { fontFamily, fontSize, lineHeight } from '../../constants/typography';
 
 type StatusBadgeProps = {
   label: string;
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xxs,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     borderWidth: 1,
   },
   dot: {
@@ -49,8 +50,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   text: {
-    fontSize: typography.caption2,
-    fontWeight: '700',
+    fontFamily: fontFamily.semiBold,
+    fontSize: fontSize.micro,
+    lineHeight: fontSize.micro * lineHeight.tight,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },

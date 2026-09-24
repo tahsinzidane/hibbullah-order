@@ -1,9 +1,12 @@
 import { memo } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import { radius } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize } from "../../constants/typography";
+import shadows from "../../constants/shadows";
+import { compression } from "../../lib/motion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import type { Product } from "../../types/product";
 import DiscountBadge from "./DiscountBadge";
 import ProductImage from "./ProductImage";
@@ -24,9 +27,17 @@ function ProductCard({
   onAddToCart,
   addToCartLoading,
 }: ProductCardProps) {
+  const reducedMotion = useReducedMotion();
+  const inStock = product.stock > 0;
+
   return (
     <Pressable
-      style={[styles.card, compact && styles.compact]}
+      style={({ pressed }) => [
+        styles.card,
+        compact && styles.compact,
+        pressed && !reducedMotion && styles.pressed,
+        pressed && styles.pressedOpacity,
+      ]}
       onPress={() => onPress?.(product)}
       accessibilityRole={
         // On web the inner "Add to cart" control renders as a button; wrapping
@@ -34,7 +45,7 @@ function ProductCard({
         // nested-button HTML. Drop the card-level role only there.
         Platform.OS === "web" && onAddToCart ? undefined : "button"
       }
-      accessibilityLabel={`${product.name}, ${product.brand}, ${product.stock > 0 ? "In stock" : "Out of stock"}`}
+      accessibilityLabel={`${product.name}, ${product.brand}, ${inStock ? "In stock" : "Out of stock"}`}
     >
       <ProductImage uri={product.image} recyclingKey={product.id} style={styles.image} />
       <View style={styles.content}>
@@ -47,29 +58,38 @@ function ProductCard({
         </Text>
         <ProductPrice price={product.price} originalPrice={product.originalPrice} />
         <View style={styles.footer}>
-          <Text style={[styles.stock, product.stock > 0 ? styles.inStock : styles.outOfStock]}>
-            {product.stock > 0 ? "In stock" : "Out of stock"}
-          </Text>
+          <View style={styles.stockRow}>
+            <View style={[styles.stockDot, inStock ? styles.inStockDot : styles.outOfStockDot]} />
+            <Text style={[styles.stock, inStock ? styles.inStock : styles.outOfStock]}>
+              {inStock ? "In stock" : "Out of stock"}
+            </Text>
+          </View>
           {product.discountPercent ? <DiscountBadge percent={product.discountPercent} /> : null}
         </View>
         {onAddToCart ? (
-          <Pressable
-            style={[styles.addButton, addToCartLoading && styles.addButtonDisabled]}
-            onPress={(event) => {
-              // Stop the press from bubbling to the outer card on web, where a
-              // click would otherwise trigger onPress() (card navigation) too.
-              event.stopPropagation();
-              onAddToCart(product);
-            }}
-            disabled={addToCartLoading}
-            accessibilityRole="button"
-            accessibilityLabel={`Add ${product.name} to cart`}
-            accessibilityState={{ disabled: addToCartLoading, busy: addToCartLoading }}
-          >
-            <Text style={styles.addButtonText}>
-              {addToCartLoading ? "Adding…" : "Add to cart"}
-            </Text>
-          </Pressable>
+          <View style={styles.addWrap}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.addButton,
+                addToCartLoading && styles.addButtonDisabled,
+                pressed && !reducedMotion && styles.addButtonPressed,
+              ]}
+              onPress={(event) => {
+                // Stop the press from bubbling to the outer card on web, where a
+                // click would otherwise trigger onPress() (card navigation) too.
+                event.stopPropagation();
+                onAddToCart(product);
+              }}
+              disabled={addToCartLoading}
+              accessibilityRole="button"
+              accessibilityLabel={`Add ${product.name} to cart`}
+              accessibilityState={{ disabled: addToCartLoading, busy: addToCartLoading }}
+            >
+              <Text style={styles.addButtonText}>
+                {addToCartLoading ? "Adding…" : "Add to cart"}
+              </Text>
+            </Pressable>
+          </View>
         ) : null}
       </View>
     </Pressable>
@@ -79,53 +99,89 @@ function ProductCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.lg,
+    borderRadius: radius.xl,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: colors.borderLight,
-    marginBottom: spacing.lg,
+    borderColor: colors.border,
+    marginBottom: spacing.md,
+    ...shadows.sm,
   },
   compact: { marginBottom: 0 },
-  image: { height: 132 },
-  content: { padding: spacing.lg },
+  pressed: { transform: [{ scale: compression.subtle }] },
+  pressedOpacity: { opacity: 0.92 },
+  image: { width: "100%", aspectRatio: 1, borderRadius: radius.lg },
+  content: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    gap: spacing.xs,
+  },
   brand: {
     color: colors.textMuted,
-    fontSize: typography.caption2,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.micro,
+    letterSpacing: 0.6,
     textTransform: "uppercase",
-    letterSpacing: 0.4,
   },
   name: {
     color: colors.text,
-    fontSize: typography.subhead,
-    fontWeight: "600",
-    letterSpacing: typography.letterSpacing.tight,
-    marginTop: spacing.xs,
+    fontFamily: fontFamily.pjsMedium,
+    fontSize: fontSize.footnote,
+    lineHeight: fontSize.footnote * 1.35,
+    minHeight: 36,
   },
-  generic: { color: colors.textMuted, fontSize: typography.caption2, marginTop: 2 },
+  generic: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.micro,
+    lineHeight: fontSize.micro * 1.3,
+  },
   footer: {
-    marginTop: spacing.md,
+    marginTop: spacing.xs,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: spacing.xs,
+    flexWrap: "wrap",
   },
-  stock: { fontSize: typography.caption2, fontWeight: "600" },
+  stockRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  stockDot: { width: 6, height: 6, borderRadius: 3 },
+  inStockDot: { backgroundColor: colors.success },
+  outOfStockDot: { backgroundColor: colors.danger },
+  stock: {
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.micro,
+  },
   inStock: { color: colors.success },
   outOfStock: { color: colors.danger },
+  addWrap: {
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm,
+    paddingTop: spacing.xs,
+  },
   addButton: {
-    marginTop: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    height: 36,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    backgroundColor: colors.backgroundAlt,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: spacing.xs,
   },
   addButtonDisabled: { opacity: 0.6 },
+  addButtonPressed: {
+    opacity: 0.88,
+    transform: [{ scale: compression.subtle }],
+  },
   addButtonText: {
-    color: colors.white,
-    fontSize: typography.footnote,
-    fontWeight: "700",
+    color: colors.primary,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.footnote,
   },
 });
 

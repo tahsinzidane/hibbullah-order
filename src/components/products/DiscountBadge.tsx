@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import { radius } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize, lineHeight } from "../../constants/typography";
 
 export default function DiscountBadge({ percent }: { percent: number }) {
   return (
@@ -15,14 +15,16 @@ export default function DiscountBadge({ percent }: { percent: number }) {
 const styles = StyleSheet.create({
   badge: {
     backgroundColor: colors.goldSoft,
-    borderRadius: sizes.borderRadius.pill,
+    borderRadius: radius.pill,
     overflow: "hidden",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
   },
   text: {
     color: colors.gold,
-    fontSize: typography.caption2,
-    fontWeight: "600",
+    fontFamily: fontFamily.semiBold,
+    fontSize: fontSize.micro,
+    lineHeight: fontSize.micro * lineHeight.tight,
+    letterSpacing: 0.4,
   },
 });

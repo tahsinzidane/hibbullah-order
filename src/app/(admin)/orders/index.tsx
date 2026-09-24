@@ -8,9 +8,11 @@ import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import SearchBar from '../../../components/common/SearchBar';
 import StatusBadge from '../../../components/common/StatusBadge';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { getAdminOrders } from '../../../services/admin/orderManagementService';
 import type { Order } from '../../../types/order';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -91,12 +93,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.md,
   },
-  orderNumber: { color: colors.text, fontSize: typography.body, fontWeight: '700' },
-  customer: { color: colors.textMuted, fontSize: typography.caption },
-  link: { color: colors.primary, fontWeight: '700' },
+  orderNumber: {
+    color: colors.text,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsSemiBold,
+  },
+  customer: {
+    color: colors.textMuted,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
+  link: { color: colors.primary, fontFamily: fontFamily.pjsSemiBold },
 });

@@ -2,9 +2,11 @@ import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/common/Header";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize } from "../../../constants/typography";
 
 export default function CustomerSettingsScreen() {
   return (
@@ -37,13 +39,24 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    minHeight: 44,
+    ...shadows.xs,
   },
-  label: { color: colors.text, fontSize: typography.body, fontWeight: "700" },
-  value: { color: colors.textMuted, fontSize: typography.bodySmall },
+  label: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
+  },
+  value: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
 });

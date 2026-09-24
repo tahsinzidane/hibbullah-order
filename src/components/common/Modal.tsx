@@ -2,7 +2,8 @@ import { Modal as RNModal, Pressable, StyleSheet, Text, View } from "react-nativ
 import colors from "../../constants/colors";
 import sizes from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize } from "../../constants/typography";
+import shadows from "../../constants/shadows";
 import Button from "./Button";
 
 export default function Modal({
@@ -53,11 +54,17 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.xl,
+    borderRadius: sizes.radius.xl,
     padding: spacing.xl,
     gap: spacing.md,
+    ...shadows.xl,
   },
-  title: { color: colors.text, fontSize: typography.title2, fontWeight: "600" },
-  message: { color: colors.textSecondary, fontSize: typography.body, lineHeight: 24 },
+  title: {
+    color: colors.text,
+    fontSize: fontSize.title2,
+    fontFamily: fontFamily.soraSemiBold,
+    letterSpacing: -0.2,
+  },
+  message: { color: colors.textSecondary, fontSize: fontSize.body, lineHeight: 24 },
   actions: { gap: spacing.sm, marginTop: spacing.sm },
 });

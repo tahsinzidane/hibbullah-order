@@ -10,10 +10,12 @@ import LoadingState from "../../../../components/common/LoadingState";
 import Modal from "../../../../components/common/Modal";
 import StatusBadge from "../../../../components/common/StatusBadge";
 import ProductImage from "../../../../components/products/ProductImage";
-import colors from "../../../../constants/colors";
+import { colors } from "../../../../constants/colors";
 import config from "../../../../constants/config";
-import spacing from "../../../../constants/spacing";
-import typography from "../../../../constants/typography";
+import { shadows } from "../../../../constants/shadows";
+import { radius } from "../../../../constants/sizes";
+import { spacing } from "../../../../constants/spacing";
+import { fontFamily, fontSize, letterSpacing } from "../../../../constants/typography";
 import {
   deleteProduct,
   setProductActive,
@@ -250,24 +252,33 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 720,
   },
-  image: { height: 180, borderRadius: 12 },
+  image: { height: 180, borderRadius: radius.md },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.hairline,
+    ...shadows.xs,
     padding: spacing.lg,
     gap: spacing.sm,
   },
   brand: {
     color: colors.textMuted,
-    fontSize: typography.caption,
-    fontWeight: "700",
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: letterSpacing.wider,
   },
-  name: { color: colors.text, fontSize: typography.h2, fontWeight: "700" },
-  generic: { color: colors.textMuted, fontSize: typography.bodySmall },
+  name: {
+    color: colors.text,
+    fontSize: fontSize.title2,
+    fontFamily: fontFamily.soraSemiBold,
+  },
+  generic: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+  },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginTop: spacing.sm },
   priceRow: {
     flexDirection: "row",
@@ -275,10 +286,15 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.sm,
   },
-  price: { color: colors.text, fontSize: typography.h3, fontWeight: "800" },
+  price: {
+    color: colors.text,
+    fontSize: fontSize.title3,
+    fontFamily: fontFamily.soraBold,
+  },
   original: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
     textDecorationLine: "line-through",
   },
   divider: { height: 1, backgroundColor: colors.borderSoft, marginVertical: spacing.sm },
@@ -288,13 +304,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.md,
   },
-  infoLabel: { color: colors.textMuted, fontSize: typography.bodySmall },
+  infoLabel: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+  },
   infoValue: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
     flexShrink: 1,
   },
-  description: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: 20 },
+  description: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    lineHeight: 20,
+  },
   actions: { gap: spacing.md, marginTop: spacing.xs },
 });

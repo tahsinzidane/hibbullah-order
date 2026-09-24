@@ -1,9 +1,10 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import sizes, { borderWidth } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import shadows from "../../constants/shadows";
+import { fontSize, fontFamily, letterSpacing } from "../../constants/typography";
 
 type AdminStatCardProps = {
   label: string;
@@ -34,7 +35,7 @@ export default function AdminStatCard({
           ]}
         />
         {icon ? (
-          <SymbolView name={icon} tintColor={iconTint} size={17} />
+          <SymbolView name={icon} tintColor={iconTint} size={16} />
         ) : null}
       </View>
       <Text style={styles.label}>{label}</Text>
@@ -52,19 +53,43 @@ const styles = StyleSheet.create({
     minWidth: "46%",
     backgroundColor: colors.backgroundAlt,
     borderRadius: sizes.borderRadius.md,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.borderLight,
     padding: spacing.md,
+    ...shadows.xs,
   },
   top: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  marker: { width: 20, height: 2, borderRadius: 1, backgroundColor: colors.borderLight, marginBottom: spacing.sm },
+  marker: {
+    width: 20,
+    height: 2,
+    borderRadius: sizes.borderRadius.sm,
+    backgroundColor: colors.borderLight,
+    marginBottom: spacing.sm,
+  },
   greenMarker: { backgroundColor: colors.primary },
   goldMarker: { backgroundColor: colors.gold },
-  label: { color: colors.textMuted, fontSize: typography.caption2, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" },
-  value: { color: colors.text, fontSize: typography.title2, fontWeight: "700", marginTop: spacing.xs, letterSpacing: typography.letterSpacing.tight },
-  detail: { color: colors.textMuted, fontSize: typography.caption1, marginTop: spacing.xs },
+  label: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.micro,
+    letterSpacing: letterSpacing.wider,
+    textTransform: "uppercase",
+  },
+  value: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.title2,
+    marginTop: spacing.xs,
+    letterSpacing: letterSpacing.tight,
+  },
+  detail: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+    marginTop: spacing.xs,
+  },
 });

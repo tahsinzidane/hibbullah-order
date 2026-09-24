@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AdminHeader from "../../../components/admin/AdminHeader";
 import Button from "../../../components/common/Button";
 import Input from "../../../components/common/Input";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
 
 export default function InventoryAdjustmentScreen() {
   return (

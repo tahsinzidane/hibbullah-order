@@ -7,9 +7,11 @@ import Header from '../../../components/common/Header';
 import StatusBadge from '../../../components/common/StatusBadge';
 import LoadingState from '../../../components/common/LoadingState';
 import ErrorState from '../../../components/common/ErrorState';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { spacing } from '../../../constants/spacing';
+import { radius } from '../../../constants/sizes';
+import { shadows } from '../../../constants/shadows';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { cancelOrderByCustomer, getOrderById } from '../../../services/orderService';
 import type { Order } from '../../../types/order';
 import { formatCurrency } from '../../../utils/currency';
@@ -193,33 +195,57 @@ export default function CustomerOrderDetailScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.lg },
+  container: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
+    ...shadows.xs,
   },
   title: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '700',
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title3,
     marginBottom: spacing.md,
   },
-  meta: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.sm },
-  detailRow: { color: colors.text, fontSize: typography.bodySmall, marginTop: spacing.sm },
+  meta: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.sm,
+  },
+  detailRow: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.sm,
+  },
   sectionTitle: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: '700',
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title3,
     marginBottom: spacing.md,
   },
   row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  itemName: { color: colors.text, fontSize: typography.body, flex: 1 },
-  itemMeta: { color: colors.textMuted, fontSize: typography.bodySmall },
+  itemName: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
+    flex: 1,
+  },
+  itemMeta: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
   summaryRow: { marginTop: spacing.md },
-  summaryLabel: { color: colors.textMuted, fontSize: typography.bodySmall },
+  summaryLabel: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+  },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -229,13 +255,27 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  totalLabel: { color: colors.text, fontSize: typography.bodySmall, fontWeight: '700' },
-  totalValue: { color: colors.text, fontSize: typography.body, fontWeight: '800' },
+  totalLabel: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+  },
+  totalValue: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.body,
+  },
   cancelWrap: { gap: spacing.sm, marginTop: spacing.sm },
-  cancelError: { color: colors.danger, fontSize: typography.bodySmall, textAlign: 'center' },
+  cancelError: {
+    color: colors.danger,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
+    textAlign: 'center',
+  },
   cancelHint: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
     textAlign: 'center',
   },
 });

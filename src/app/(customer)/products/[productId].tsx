@@ -10,7 +10,8 @@ import StatusBadge from "../../../components/common/StatusBadge";
 import ProductImage from "../../../components/products/ProductImage";
 import colors from "../../../constants/colors";
 import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { radius } from "../../../constants/sizes";
+import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
 import { useCart } from "../../../hooks/useCart";
 import { useProduct } from "../../../hooks/useProduct";
 import {
@@ -150,63 +151,109 @@ const styles = StyleSheet.create({
   container: {
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
-    gap: spacing.lg,
+    gap: spacing.md,
   },
   image: {
     width: "100%",
-    height: 220,
+    aspectRatio: 1,
     backgroundColor: colors.primarySoft,
-    borderRadius: 18,
+    borderRadius: radius.lg,
   },
   brand: {
     color: colors.textMuted,
-    fontSize: typography.caption,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.micro,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
   },
-  name: { color: colors.text, fontSize: typography.title, fontWeight: "800" },
-  generic: { color: colors.textMuted, fontSize: typography.bodySmall },
+  name: {
+    color: colors.text,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title1,
+  },
+  generic: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.footnote,
+  },
   priceRow: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
-  price: { color: colors.text, fontSize: typography.title, fontWeight: "800" },
-  original: { color: colors.textMuted, fontSize: typography.body, textDecorationLine: "line-through" },
+  price: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.title2,
+    letterSpacing: letterSpacing.tight,
+  },
+  original: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.body,
+    textDecorationLine: "line-through",
+  },
   metaRow: { flexDirection: "row", gap: spacing.sm, flexWrap: "wrap" },
-  description: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: 22 },
+  description: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    lineHeight: 22,
+  },
   infoBlock: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
   },
   infoTitle: {
     color: colors.text,
-    fontSize: typography.body,
-    fontWeight: "700",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.body,
     marginBottom: spacing.sm,
   },
-  infoText: { color: colors.textMuted, fontSize: typography.bodySmall, marginBottom: spacing.xs },
+  infoText: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    marginBottom: spacing.xs,
+  },
   quantityRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  qtyLabel: { color: colors.text, fontSize: typography.body, fontWeight: "700" },
+  qtyLabel: {
+    color: colors.text,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.body,
+  },
   qtySelector: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 12,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    minHeight: 40,
   },
-  qtyAction: { color: colors.primary, fontSize: 24, fontWeight: "700" },
-  qtyValue: { color: colors.text, fontSize: typography.h3, fontWeight: "700" },
+  qtyAction: {
+    color: colors.primary,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.title3,
+    textAlign: "center",
+    lineHeight: 40,
+    width: 40,
+    height: 40,
+  },
+  qtyValue: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
+  },
   feedback: {
     color: colors.success,
-    fontSize: typography.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
     textAlign: "center",
   },
 });

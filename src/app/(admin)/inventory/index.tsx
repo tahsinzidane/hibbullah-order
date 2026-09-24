@@ -5,9 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AdminHeader from "../../../components/admin/AdminHeader";
 import Button from "../../../components/common/Button";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { shadows } from "../../../constants/shadows";
+import { radius } from "../../../constants/sizes";
+import { spacing } from "../../../constants/spacing";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { getInventory } from "../../../services/admin/inventoryService";
 import type { InventoryItem } from "../../../types/inventory";
 
@@ -63,12 +65,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.md,
   },
-  name: { color: colors.text, fontWeight: "700" },
-  meta: { color: colors.textMuted, fontSize: typography.caption },
-  qty: { color: colors.primary, fontWeight: "700" },
+  name: { color: colors.text, fontFamily: fontFamily.pjsBold },
+  meta: {
+    color: colors.textMuted,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsRegular,
+  },
+  qty: { color: colors.primary, fontFamily: fontFamily.pjsBold },
 });

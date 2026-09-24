@@ -1,10 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SymbolView } from "expo-symbols";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
-import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { colors } from "../../constants/colors";
+import { borderWidth, radius } from "../../constants/sizes";
+import { spacing } from "../../constants/spacing";
+import { shadows } from "../../constants/shadows";
+import { fontFamily, fontSize, letterSpacing } from "../../constants/typography";
+import { usePressFeedback } from "../../lib/motion";
 
 type HeaderProps = {
   title: string;
@@ -19,15 +20,14 @@ export default function Header({
   rightAction,
   onBack,
 }: HeaderProps) {
-  const insets = useSafeAreaInsets();
-
+  const feedback = usePressFeedback();
   return (
-    <View style={[styles.container, { paddingTop: insets.top + spacing.md }]}>
+    <View style={styles.container}>
       <View style={styles.row}>
         {onBack ? (
           <Pressable
             onPress={onBack}
-            style={styles.backButton}
+            style={({ pressed }) => [styles.backButton, feedback(pressed)]}
             accessibilityRole="button"
             accessibilityLabel="Go back"
             hitSlop={8}
@@ -35,7 +35,7 @@ export default function Header({
             <SymbolView
               name={{ ios: "chevron.left", android: "arrow_back", web: "arrow_back" }}
               tintColor={colors.primary}
-              size={21}
+              size={22}
             />
           </Pressable>
         ) : null}
@@ -57,33 +57,44 @@ export default function Header({
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
     backgroundColor: colors.backgroundAlt,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.borderLight,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    ...shadows.sm,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    minHeight: 44,
+    minHeight: 38,
   },
   backButton: {
-    width: sizes.touch,
-    height: sizes.touch,
-    borderRadius: sizes.borderRadius.pill,
+    width: 32,
+    height: 32,
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.borderLight,
+    backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
   },
   titleArea: { flex: 1 },
   title: {
     color: colors.text,
-    fontSize: typography.title3,
-    fontWeight: "600",
-    letterSpacing: typography.letterSpacing.tight,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.bodySmall,
+    lineHeight: 18,
+    letterSpacing: letterSpacing.tight,
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: typography.caption1,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
     marginTop: spacing.xxs,
   },
   action: { alignItems: "center", justifyContent: "center" },

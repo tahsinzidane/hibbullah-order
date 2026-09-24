@@ -8,9 +8,11 @@ import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import StatusBadge from '../../../components/common/StatusBadge';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import {
   cancelOrder,
   confirmOrder,
@@ -140,13 +142,39 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xxl },
   errorWrap: { padding: spacing.lg },
-  card: { backgroundColor: colors.backgroundAlt, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: spacing.lg },
-  customer: { color: colors.text, fontSize: typography.h3, fontWeight: '700', marginBottom: spacing.sm },
-  meta: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.sm },
-  sectionTitle: { color: colors.text, fontSize: typography.h3, fontWeight: '700', marginBottom: spacing.md },
+  card: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.xs,
+    padding: spacing.lg,
+  },
+  customer: {
+    color: colors.text,
+    fontSize: fontSize.title3,
+    fontFamily: fontFamily.soraSemiBold,
+    marginBottom: spacing.sm,
+  },
+  meta: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    marginTop: spacing.sm,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontSize: fontSize.title3,
+    fontFamily: fontFamily.soraSemiBold,
+    marginBottom: spacing.md,
+  },
   row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  itemName: { color: colors.text, fontSize: typography.body, flex: 1 },
-  itemMeta: { color: colors.textMuted, fontSize: typography.bodySmall },
+  itemName: { color: colors.text, fontSize: fontSize.body, fontFamily: fontFamily.pjsRegular, flex: 1 },
+  itemMeta: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+  },
   footer: {
     padding: spacing.lg,
     gap: spacing.md,
@@ -154,5 +182,10 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     backgroundColor: colors.background,
   },
-  actionError: { color: colors.danger, fontSize: typography.bodySmall, textAlign: "center" },
+  actionError: {
+    color: colors.danger,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    textAlign: "center",
+  },
 });

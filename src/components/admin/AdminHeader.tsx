@@ -1,8 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
+import { borderWidth, radius } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import shadows from "../../constants/shadows";
+import { fontFamily, fontSize, letterSpacing } from "../../constants/typography";
 
 type AdminHeaderProps = {
   title: string;
@@ -31,31 +33,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     backgroundColor: colors.backgroundAlt,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.borderLight,
+    borderRadius: radius.lg,
+    ...shadows.sm,
   },
   titleArea: { flex: 1 },
   eyebrow: {
     color: colors.textMuted,
-    fontSize: typography.caption2,
-    fontWeight: "700",
-    letterSpacing: 1.2,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.micro,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
   },
   title: {
     color: colors.text,
-    fontSize: typography.title2,
-    fontWeight: "700",
-    letterSpacing: typography.letterSpacing.tight,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title2,
+    letterSpacing: letterSpacing.tight,
     marginTop: spacing.xxs,
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: typography.caption1,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
     marginTop: spacing.xxs,
   },
 });

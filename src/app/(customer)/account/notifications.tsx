@@ -3,10 +3,13 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/common/Header";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { useNotifications } from "../../../hooks/useNotifications";
+import { usePressFeedback } from "../../../lib/motion";
 import type { NotificationType } from "../../../types/notification";
 import { formatDateTime } from "../../../utils/date";
 
@@ -33,6 +36,7 @@ export default function CustomerNotificationsScreen() {
     markAllRead,
     refresh,
   } = useNotifications();
+  const feedback = usePressFeedback();
 
   if (loading) return <LoadingState label="Loading notifications" />;
 
@@ -85,7 +89,7 @@ export default function CustomerNotificationsScreen() {
                 style={({ pressed }) => [
                   styles.card,
                   !notification.read && styles.cardUnread,
-                  pressed && styles.pressed,
+                  feedback(pressed),
                 ]}
               >
                 <View style={styles.cardHeader}>
@@ -128,13 +132,13 @@ const styles = StyleSheet.create({
   },
   markAll: {
     color: colors.primary,
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
   },
   errorText: {
     color: colors.danger,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsMedium,
+    fontSize: fontSize.bodySmall,
     textAlign: "center",
     paddingVertical: spacing.sm,
   },
@@ -145,44 +149,54 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: "700",
+    fontSize: fontSize.title3,
+    fontFamily: fontFamily.soraSemiBold,
   },
   emptyBody: {
     color: colors.textMuted,
-    fontSize: typography.bodySmall,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
     textAlign: "center",
   },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.lg,
+    ...shadows.xs,
   },
   cardUnread: {
     borderColor: colors.borderFocus,
     backgroundColor: colors.primarySoft,
   },
-  pressed: { opacity: 0.6, transform: [{ scale: 0.99 }] },
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
   },
-  dot: { width: 8, height: 8, borderRadius: 4 },
+  dot: { width: 8, height: 8, borderRadius: radius.pill },
   title: {
     color: colors.textMuted,
-    fontSize: typography.body,
-    fontWeight: "600",
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsMedium,
     flex: 1,
   },
-  titleUnread: { color: colors.text, fontWeight: "700" },
+  titleUnread: { color: colors.text, fontFamily: fontFamily.pjsBold },
   unreadPip: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.pill,
   },
-  body: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.sm },
-  time: { marginTop: spacing.sm, fontSize: typography.caption, fontWeight: "600" },
+  body: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.sm,
+  },
+  time: {
+    marginTop: spacing.sm,
+    fontSize: fontSize.caption,
+    fontFamily: fontFamily.pjsMedium,
+  },
 });

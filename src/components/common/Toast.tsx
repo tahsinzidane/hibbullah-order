@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import colors from "../../constants/colors";
+import { radius } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize } from "../../constants/typography";
+import shadows from "../../constants/shadows";
 
 type ToastProps = {
   message: string | null;
@@ -57,21 +59,17 @@ const styles = StyleSheet.create({
     left: spacing.xl,
     right: spacing.xl,
     backgroundColor: colors.ink,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: colors.black,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    ...shadows.sm,
   },
   text: {
     color: colors.white,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsSemiBold,
     textAlign: "center",
   },
 });

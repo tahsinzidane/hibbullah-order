@@ -6,9 +6,11 @@ import Button from "../../../components/common/Button";
 import EmptyState from "../../../components/common/EmptyState";
 import Header from "../../../components/common/Header";
 import LoadingState from "../../../components/common/LoadingState";
-import colors from "../../../constants/colors";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { colors } from "../../../constants/colors";
+import { spacing } from "../../../constants/spacing";
+import { radius } from "../../../constants/sizes";
+import { shadows } from "../../../constants/shadows";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import { useAuth } from "../../../hooks/useAuth";
 import { supabase } from "../../../lib/supabase";
 import { getAddresses } from "../../../services/addressService";
@@ -87,7 +89,7 @@ export default function CustomerAddressesScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
-  card: { backgroundColor: colors.backgroundAlt, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: spacing.lg },
-  label: { color: colors.text, fontSize: typography.body, fontWeight: '700', marginBottom: spacing.xs },
-  text: { color: colors.textMuted, fontSize: typography.bodySmall },
+  card: { backgroundColor: colors.backgroundAlt, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, ...shadows.xs },
+  label: { color: colors.text, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.body, marginBottom: spacing.xs },
+  text: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: fontSize.bodySmall },
 });

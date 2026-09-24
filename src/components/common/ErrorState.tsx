@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize, lineHeight } from "../../constants/typography";
 import Button from "./Button";
 
 export default function ErrorState({
@@ -30,6 +30,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
   },
-  title: { color: colors.danger, fontSize: typography.title3, fontWeight: "600" },
-  message: { color: colors.textSecondary, fontSize: typography.footnote, textAlign: "center" },
+  title: {
+    color: colors.danger,
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title3,
+    lineHeight: fontSize.title3 * lineHeight.normal,
+  },
+  message: {
+    color: colors.textSecondary,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.footnote,
+    lineHeight: fontSize.footnote * lineHeight.relaxed,
+    textAlign: "center",
+  },
 });

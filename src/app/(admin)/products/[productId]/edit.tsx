@@ -7,7 +7,7 @@ import ProductForm from "../../../../components/admin/ProductForm";
 import EmptyState from "../../../../components/common/EmptyState";
 import ErrorState from "../../../../components/common/ErrorState";
 import LoadingState from "../../../../components/common/LoadingState";
-import colors from "../../../../constants/colors";
+import { colors } from "../../../../constants/colors";
 import { updateProduct } from "../../../../services/admin/adminProductService";
 import { getCategories } from "../../../../services/categoryService";
 import { getManufacturers } from "../../../../services/manufacturerService";

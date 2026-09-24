@@ -7,7 +7,7 @@ import Input from '../../components/common/Input';
 import Header from '../../components/common/Header';
 import colors from '../../constants/colors';
 import spacing from '../../constants/spacing';
-import typography from '../../constants/typography';
+import { fontFamily } from '../../constants/typography';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('amina@hibbullah.app');
@@ -26,6 +26,9 @@ export default function ForgotPasswordScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { flexGrow: 1, padding: spacing.xxl, gap: spacing.xl },
-  subtitle: { color: colors.textMuted, fontSize: typography.bodySmall },
+  container: { flexGrow: 1, padding: spacing.xxl, gap: spacing.lg },
+  subtitle: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+  },
 });

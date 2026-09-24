@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
-import sizes from "../../constants/sizes";
+import sizes, { borderWidth, layout } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import typography from "../../constants/typography";
+import { fontFamily, fontSize } from "../../constants/typography";
+import { usePressFeedback } from "../../lib/motion";
 
 export default function QuantitySelector({
   value,
@@ -15,11 +16,12 @@ export default function QuantitySelector({
   min?: number;
   max?: number;
 }) {
+  const feedback = usePressFeedback();
   return (
     <View style={styles.row}>
       <Pressable
         onPress={() => onChange(Math.max(min, value - 1))}
-        style={styles.control}
+        style={({ pressed }) => [styles.control, feedback(pressed)]}
         hitSlop={6}
         accessibilityRole="button"
         accessibilityLabel="Decrease quantity"
@@ -30,7 +32,7 @@ export default function QuantitySelector({
       <Text style={styles.value} accessibilityRole="text">{value}</Text>
       <Pressable
         onPress={() => onChange(Math.min(max, value + 1))}
-        style={styles.control}
+        style={({ pressed }) => [styles.control, feedback(pressed)]}
         hitSlop={6}
         accessibilityRole="button"
         accessibilityLabel="Increase quantity"
@@ -49,17 +51,27 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     backgroundColor: colors.backgroundAlt,
     borderRadius: sizes.borderRadius.pill,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.border,
     paddingHorizontal: spacing.sm,
-    minHeight: sizes.touch,
+    minHeight: layout.touch,
   },
   control: {
-    width: sizes.touch,
-    height: sizes.touch,
+    width: layout.touch,
+    height: layout.touch,
     alignItems: "center",
     justifyContent: "center",
   },
-  symbol: { color: colors.primary, fontSize: typography.headline, fontWeight: "600" },
-  value: { color: colors.text, fontSize: typography.headline, fontWeight: "600", minWidth: 24, textAlign: "center" },
+  symbol: {
+    color: colors.primary,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
+  },
+  value: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.body,
+    minWidth: 24,
+    textAlign: "center",
+  },
 });

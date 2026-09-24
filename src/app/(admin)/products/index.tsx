@@ -10,10 +10,10 @@ import ErrorState from "../../../components/common/ErrorState";
 import FilterChip from "../../../components/common/FilterChip";
 import LoadingState from "../../../components/common/LoadingState";
 import SearchBar from "../../../components/common/SearchBar";
-import colors from "../../../constants/colors";
+import { colors } from "../../../constants/colors";
 import config from "../../../constants/config";
-import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { spacing } from "../../../constants/spacing";
+import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
 import { getAdminProducts } from "../../../services/admin/adminProductService";
 import { getCategories } from "../../../services/categoryService";
 import type { Category } from "../../../types/category";
@@ -211,9 +211,9 @@ const styles = StyleSheet.create({
   chipRow: { gap: spacing.sm, paddingRight: spacing.sm },
   count: {
     color: colors.textMuted,
-    fontSize: typography.caption,
-    fontWeight: "600",
-    letterSpacing: 0.4,
+    fontSize: fontSize.micro,
+    fontFamily: fontFamily.pjsBold,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
     marginTop: spacing.xs,
   },

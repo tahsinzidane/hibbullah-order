@@ -18,7 +18,9 @@ import SearchBar from "../../../components/common/SearchBar";
 import ProductCard from "../../../components/products/ProductCard";
 import colors from "../../../constants/colors";
 import spacing from "../../../constants/spacing";
-import typography from "../../../constants/typography";
+import { radius } from "../../../constants/sizes";
+import shadows from "../../../constants/shadows";
+import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
 import {
   mockCategories,
   mockManufacturers,
@@ -312,8 +314,8 @@ const styles = StyleSheet.create({
   brandRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   brandName: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.bodySmall,
   },
   headerActions: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   cartButton: {
@@ -331,8 +333,8 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     backgroundColor: colors.gold,
     color: colors.white,
-    fontSize: typography.label,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.tiny,
     textAlign: "center",
     lineHeight: 17,
   },
@@ -344,17 +346,18 @@ const styles = StyleSheet.create({
     right: 0,
     maxHeight: 290,
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.md,
     zIndex: 20,
-    elevation: 5,
+    ...shadows.lg,
   },
   searchPanelTitle: {
     color: colors.textMuted,
-    fontSize: typography.caption,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.caption,
+    letterSpacing: letterSpacing.wide,
     marginBottom: spacing.xs,
   },
   searchResult: {
@@ -364,18 +367,23 @@ const styles = StyleSheet.create({
   },
   searchResultName: {
     color: colors.text,
-    fontSize: typography.bodySmall,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
   },
   searchResultMeta: {
     color: colors.textMuted,
-    fontSize: typography.caption,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
     marginTop: spacing.xs,
   },
-  noResults: { color: colors.textMuted, paddingVertical: spacing.md },
+  noResults: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    paddingVertical: spacing.md,
+  },
   feedback: {
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
     marginTop: spacing.md,
     marginBottom: spacing.md,
   },
@@ -383,27 +391,33 @@ const styles = StyleSheet.create({
   feedbackError: { color: colors.danger },
   heroCard: {
     backgroundColor: colors.primarySoft,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     padding: spacing.xl,
     marginBottom: spacing.xl,
   },
   heroLabel: {
     color: colors.primary,
-    fontSize: typography.caption,
-    fontWeight: "700",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.micro,
+    letterSpacing: letterSpacing.wider,
     textTransform: "uppercase",
   },
   heroTitle: {
     color: colors.text,
-    fontSize: typography.h2,
-    fontWeight: "700",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title2,
     marginTop: spacing.sm,
   },
-  heroText: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.xs },
+  heroText: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.xs,
+  },
   heroPrice: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: "800",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.body,
     marginTop: spacing.md,
   },
   sectionHeader: {
@@ -415,13 +429,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: typography.h3,
-    fontWeight: "700",
+    fontFamily: fontFamily.soraSemiBold,
+    fontSize: fontSize.title3,
   },
   link: {
     color: colors.primary,
-    fontSize: typography.bodySmall,
-    fontWeight: "600",
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.bodySmall,
   },
   horizontalCard: { width: 260, marginRight: spacing.md },
   chipGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
@@ -429,9 +443,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundAlt,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  chipText: { color: colors.text, fontSize: typography.bodySmall, fontWeight: "600" },
+  chipText: {
+    color: colors.text,
+    fontFamily: fontFamily.pjsSemiBold,
+    fontSize: fontSize.footnote,
+  },
 });

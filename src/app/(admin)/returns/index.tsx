@@ -7,9 +7,11 @@ import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import StatusBadge from '../../../components/common/StatusBadge';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily, fontSize } from '../../../constants/typography';
 import { getReturns } from '../../../services/admin/returnService';
 import type { ReturnRequest } from '../../../types/return';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -80,13 +82,24 @@ const styles = StyleSheet.create({
   container: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.lg,
   },
-  order: { color: colors.text, fontSize: typography.body, fontWeight: '700' },
-  reason: { color: colors.textMuted, fontSize: typography.bodySmall, marginTop: spacing.xs, marginBottom: spacing.sm },
+  order: {
+    color: colors.text,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.pjsBold,
+  },
+  reason: {
+    color: colors.textMuted,
+    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsRegular,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+  },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  link: { color: colors.primary, fontWeight: '700' },
+  link: { color: colors.primary, fontFamily: fontFamily.pjsBold },
 });

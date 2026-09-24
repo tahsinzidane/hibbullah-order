@@ -6,9 +6,11 @@ import EmptyState from '../../../components/common/EmptyState';
 import ErrorState from '../../../components/common/ErrorState';
 import LoadingState from '../../../components/common/LoadingState';
 import StatusBadge from '../../../components/common/StatusBadge';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-import typography from '../../../constants/typography';
+import { colors } from '../../../constants/colors';
+import { shadows } from '../../../constants/shadows';
+import { radius } from '../../../constants/sizes';
+import { spacing } from '../../../constants/spacing';
+import { fontFamily } from '../../../constants/typography';
 import { getBatches } from '../../../services/admin/batchService';
 import type { InventoryItem } from '../../../types/inventory';
 import { normalizeError } from '../../../utils/errorHandling';
@@ -69,12 +71,17 @@ const styles = StyleSheet.create({
   container: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.xs,
     padding: spacing.lg,
   },
-  heading: { color: colors.text, fontWeight: '700' },
-  meta: { color: colors.textMuted, marginTop: spacing.xs },
+  heading: { color: colors.text, fontFamily: fontFamily.pjsBold },
+  meta: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.pjsRegular,
+    marginTop: spacing.xs,
+  },
   badgeRow: { marginTop: spacing.sm },
 });
