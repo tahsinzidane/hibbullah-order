@@ -11,6 +11,7 @@ import type { Product } from "../../types/product";
 import DiscountBadge from "./DiscountBadge";
 import ProductImage from "./ProductImage";
 import ProductPrice from "./ProductPrice";
+import { getProductImageUri } from "../../utils/image";
 
 type ProductCardProps = {
   product: Product;
@@ -47,7 +48,7 @@ function ProductCard({
       }
       accessibilityLabel={`${product.name}, ${product.brand}, ${inStock ? "In stock" : "Out of stock"}`}
     >
-      <ProductImage uri={product.image} recyclingKey={product.id} style={styles.image} />
+      <ProductImage uri={getProductImageUri(product)} recyclingKey={product.id} style={styles.image} />
       <View style={styles.content}>
         <Text style={styles.brand}>{product.brand}</Text>
         <Text style={styles.name} numberOfLines={2}>

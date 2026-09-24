@@ -38,6 +38,7 @@ export type ProductRow = {
 };
 
 export function mapProductRow(row: ProductRow): Product {
+  const fallbackImage = row.image ?? row.primary_image ?? row.secondary_image ?? undefined;
   return {
     id: row.id,
     name: row.name,
@@ -52,7 +53,7 @@ export function mapProductRow(row: ProductRow): Product {
       row.discount_percent != null ? Number(row.discount_percent) : undefined,
     stock: Number(row.stock),
     unit: row.unit,
-    image: row.image ?? undefined,
+    image: fallbackImage,
     primaryImage: row.primary_image ?? undefined,
     secondaryImage: row.secondary_image ?? undefined,
     isActive: row.is_active,

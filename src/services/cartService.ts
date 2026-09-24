@@ -6,6 +6,7 @@ import type { Database } from "../types/database";
 import type { Product } from "../types/product";
 import { store } from "./mockData";
 import { getProductById } from "./productService";
+import { getProductImageUri } from "../utils/image";
 
 type CartItemRow = Database["public"]["Tables"]["cart_items"]["Row"];
 
@@ -75,7 +76,7 @@ async function mapRowsToCartItems(rows: CartItemRow[]): Promise<CartItem[]> {
         product: {
           ...product,
           name: row.product_name || product.name,
-          image: row.product_image ?? product.image,
+          image: row.product_image ?? getProductImageUri(product),
         },
       });
       continue;
@@ -194,7 +195,7 @@ export async function addToCart(
       user_email: authUser?.email ?? null,
       product_id: productId,
       product_name: product.name,
-      product_image: product.image ?? null,
+      product_image: getProductImageUri(product) ?? null,
       unit_price: product.price,
     };
 

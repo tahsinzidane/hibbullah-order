@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "../../constants/colors";
 import { borderWidth, radius } from "../../constants/sizes";
 import { spacing } from "../../constants/spacing";
@@ -32,11 +32,7 @@ export default function Header({
             accessibilityLabel="Go back"
             hitSlop={8}
           >
-            <SymbolView
-              name={{ ios: "chevron.left", android: "arrow_back", web: "arrow_back" }}
-              tintColor={colors.primary}
-              size={22}
-            />
+            <MaterialIcons name="arrow-back" size={20} color={colors.primary} />
           </Pressable>
         ) : null}
         <View style={styles.titleArea}>

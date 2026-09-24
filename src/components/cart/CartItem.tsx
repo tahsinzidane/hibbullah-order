@@ -1,13 +1,16 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../../constants/colors";
-import sizes, { borderWidth } from "../../constants/sizes";
+import sizes, { borderWidth, radius } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
-import { fontFamily, fontSize } from "../../constants/typography";
+import { fontFamily, fontSize, lineHeight } from "../../constants/typography";
+import shadows from "../../constants/shadows";
 import { usePressFeedback } from "../../lib/motion";
 import type { CartItem } from "../../types/cart";
 import { formatCurrency } from "../../utils/currency";
 import ProductImage from "../products/ProductImage";
 import QuantitySelector from "./QuantitySelector";
+import { getProductImageUri } from "../../utils/image";
 
 export default function CartItemRow({
   item,
@@ -22,31 +25,30 @@ export default function CartItemRow({
   return (
     <View style={styles.row}>
       <ProductImage
-        uri={item.product.image}
+        uri={getProductImageUri(item.product)}
         recyclingKey={item.id}
         style={styles.image}
       />
       <View style={styles.info}>
-        <Text style={styles.name}>{item.product.name}</Text>
-        <Text style={styles.meta}>{formatCurrency(item.product.price)}</Text>
-        <QuantitySelector
-          value={item.quantity}
-          onChange={onQuantity}
-          max={item.product.stock}
-        />
+        <Text style={styles.name} numberOfLines={2}>
+          {item.product.name}
+        </Text>
+        <Text style={styles.meta} numberOfLines={1}>
+          {item.product.brand} · {item.product.genericName}
+        </Text>
+        <Text style={styles.unitPrice}>{formatCurrency(item.product.price)} each</Text>
+        <QuantitySelector value={item.quantity} onChange={onQuantity} max={item.product.stock} />
       </View>
       <View style={styles.aside}>
-        <Text style={styles.price}>
-          {formatCurrency(item.product.price * item.quantity)}
-        </Text>
+        <Text style={styles.price}>{formatCurrency(item.product.price * item.quantity)}</Text>
         <Pressable
           onPress={onRemove}
           hitSlop={8}
-          style={({ pressed }) => [feedback(pressed)]}
+          style={({ pressed }) => [styles.binBtn, feedback(pressed)]}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${item.product.name} from cart`}
         >
-          <Text style={styles.remove}>Remove</Text>
+          <MaterialIcons name="delete-outline" size={16} color={colors.danger} />
         </Pressable>
       </View>
     </View>
@@ -57,38 +59,57 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.lg,
+    borderRadius: radius.lg,
     borderWidth: borderWidth.thin,
     borderColor: colors.borderLight,
-    padding: spacing.md,
+    padding: spacing.sm,
+    ...shadows.xs,
   },
   image: {
-    width: sizes.thumbnail,
-    height: sizes.thumbnail,
-    borderRadius: sizes.borderRadius.md,
+    width: 64,
+    height: 64,
+    borderRadius: radius.md,
+    backgroundColor: "#F8F8F6",
   },
-  info: { flex: 1, gap: spacing.xxs },
+  info: { flex: 1, gap: 4, justifyContent: "center" },
   name: {
     color: colors.text,
     fontFamily: fontFamily.pjsMedium,
-    fontSize: fontSize.bodySmall,
+    fontSize: fontSize.footnote,
+    lineHeight: fontSize.footnote * lineHeight.normal,
   },
   meta: {
     color: colors.textMuted,
     fontFamily: fontFamily.pjsRegular,
-    fontSize: fontSize.footnote,
+    fontSize: fontSize.micro,
+    lineHeight: fontSize.micro * lineHeight.normal,
   },
-  aside: { alignItems: "flex-end", justifyContent: "space-between" },
+  unitPrice: {
+    color: colors.gold,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.caption,
+  },
+  aside: {
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+    minHeight: 64,
+  },
   price: {
     color: colors.text,
-    fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.bodySmall,
+    fontFamily: fontFamily.pjsBold,
+    fontSize: fontSize.footnote,
   },
-  remove: {
-    color: colors.danger,
-    fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.micro,
+  binBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.dangerSoft,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.dangerBorder,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

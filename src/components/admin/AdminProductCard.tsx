@@ -10,13 +10,16 @@ import type { Product } from "../../types/product";
 import ProductImage from "../products/ProductImage";
 import ProductPrice from "../products/ProductPrice";
 import StatusBadge from "../common/StatusBadge";
+import { getProductImageUri } from "../../utils/image";
 
 export default function AdminProductCard({ product, onPress }: { product: Product; onPress?: (product: Product) => void }) {
 	const reducedMotion = useReducedMotion();
 	const available = product.isActive && product.stock > 0;
 	return (
 		<Pressable style={({ pressed }) => [styles.card, pressed && !reducedMotion && styles.pressed]} onPress={() => onPress?.(product)} accessibilityRole="button" accessibilityLabel={`Edit ${product.name}`}>
-			<ProductImage uri={product.primaryImage ?? product.image} recyclingKey={product.id} style={styles.image} />
+			<View style={styles.imageWrap}>
+				<ProductImage uri={getProductImageUri(product)} recyclingKey={product.id} style={styles.image} />
+			</View>
 			<View style={styles.content}>
 				<View style={styles.topRow}>
 					<Text style={styles.name} numberOfLines={2}>{product.name}</Text>
@@ -33,10 +36,11 @@ export default function AdminProductCard({ product, onPress }: { product: Produc
 }
 
 const styles = StyleSheet.create({
-	card: { flexDirection: "row", backgroundColor: colors.backgroundAlt, borderRadius: sizes.borderRadius.lg, borderWidth: borderWidth.thin, borderColor: colors.border, overflow: "hidden", ...shadows.xs },
+	card: { flexDirection: "row", backgroundColor: colors.backgroundAlt, borderRadius: sizes.borderRadius.lg, borderWidth: borderWidth.thin, borderColor: colors.borderLight, overflow: "hidden", ...shadows.xs },
 	pressed: { transform: [{ scale: compression.subtle }], opacity: 0.92 },
-	image: { width: 88, height: 104, borderRadius: 0 },
-	content: { flex: 1, padding: spacing.md, gap: spacing.xs },
+	imageWrap: { width: 88, height: 104, backgroundColor: "#F8F8F6", padding: 4, alignItems: "center", justifyContent: "center" },
+	image: { width: "100%", height: "100%", borderRadius: sizes.borderRadius.md, backgroundColor: "#F8F8F6" },
+	content: { flex: 1, padding: spacing.sm, gap: spacing.xs, justifyContent: "center" },
 	topRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm },
 	name: { flex: 1, color: colors.text, fontFamily: fontFamily.pjsMedium, fontSize: fontSize.footnote },
 	meta: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: fontSize.micro },

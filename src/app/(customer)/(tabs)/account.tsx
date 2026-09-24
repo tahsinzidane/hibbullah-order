@@ -1,242 +1,272 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../hooks/useAuth";
-import { colors } from "../../../constants/colors";
-import { spacing } from "../../../constants/spacing";
-import { radius } from "../../../constants/sizes";
-import { shadows } from "../../../constants/shadows";
-import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
+import colors from "../../../constants/colors";
+import spacing from "../../../constants/spacing";
+import { radius, borderWidth } from "../../../constants/sizes";
+import shadows from "../../../constants/shadows";
+import { fontFamily, fontSize, lineHeight } from "../../../constants/typography";
+import Header from "../../../components/common/Header";
+import { usePressFeedback } from "../../../lib/motion";
 
 export default function AccountScreen() {
   const router = useRouter();
   const { user, isAdmin, signOut } = useAuth();
-
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : "T";
+  const initial = user?.name ? user.name.charAt(0).toUpperCase() : "H";
+  const feedback = usePressFeedback();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Account</Text>
-        <Text style={styles.subtitle}>Your personal preferences</Text>
-      </View>
-
-      <View style={styles.userCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initial}</Text>
-        </View>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>{user?.name || "User"}</Text>
-          <Text style={styles.userEmail}>{user?.email || ""}</Text>
-        </View>
-      </View>
-
-      {/* Admin Dashboard — visible only to admin users */}
-      {isAdmin ? (
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>ADMIN</Text>
-          <TouchableOpacity
-            style={styles.optionButton}
-            activeOpacity={0.7}
-            onPress={() => router.push("/(admin)")}
-          >
-            <View style={styles.optionRow}>
-              <View style={styles.optionIcon}>
-                <SymbolView
-                  name={{ ios: "square.grid.2x2.fill", android: "grid_view", web: "grid_view" }}
-                  tintColor={colors.primary}
-                  size={18}
-                />
-              </View>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionText}>Dashboard</Text>
-                <Text style={styles.optionHint}>Manage store operations</Text>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <Header title="Account" subtitle="Your Hibbullah profile" />
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.userCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initial}</Text>
+            <View style={styles.dot} />
+          </View>
+          <View style={styles.userInfo}>
+            <View style={styles.nameRow}>
+              <Text style={styles.userName} numberOfLines={1}>
+                {user?.name || "Welcome"}
+              </Text>
+              <View style={styles.rolePill}>
+                <Text style={styles.roleText}>{isAdmin ? "Admin" : "Customer"}</Text>
               </View>
             </View>
-          </TouchableOpacity>
+            <Text style={styles.userEmail} numberOfLines={1}>
+              {user?.email || "Manage your account"}
+            </Text>
+          </View>
+          <View style={styles.chev}>
+            <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+          </View>
         </View>
-      ) : null}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>ACCOUNT</Text>
-        <TouchableOpacity
-          style={styles.optionButton}
-          activeOpacity={0.7}
-          onPress={() => router.push("/(customer)/account/profile")}
-        >
-          <Text style={styles.optionText}>Profile</Text>
-          <Text style={styles.optionHint}>Name and contact details</Text>
-        </TouchableOpacity>
+        {isAdmin ? (
+          <View style={styles.sectionWrap}>
+            <Text style={styles.sectionTitle}>Admin</Text>
+            <View style={styles.panel}>
+              <Pressable
+                style={({ pressed }) => [styles.row, feedback(pressed)]}
+                onPress={() => router.push("/(admin)" as never)}
+                accessibilityRole="button"
+              >
+                <View style={styles.iconTile}>
+                  <MaterialIcons name="dashboard" size={16} color={colors.primary} />
+                </View>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>Dashboard</Text>
+                  <Text style={styles.rowMeta}>Manage store operations</Text>
+                </View>
+                <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
 
-        <TouchableOpacity
-          style={styles.optionButton}
-          activeOpacity={0.7}
-          onPress={() => router.push("/(customer)/account/addresses" as any)}
-        >
-          <Text style={styles.optionText}>Addresses</Text>
-          <Text style={styles.optionHint}>Delivery locations</Text>
-        </TouchableOpacity>
+        <View style={styles.sectionWrap}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          <View style={styles.panel}>
+            <Pressable
+              style={({ pressed }) => [styles.row, feedback(pressed)]}
+              onPress={() => router.push("/(customer)/account/profile" as never)}
+            >
+              <View style={styles.iconTile}>
+                <MaterialIcons name="person" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Profile</Text>
+                <Text style={styles.rowMeta}>Name and contact details</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+            </Pressable>
+            <View style={styles.hairline} />
+            <Pressable
+              style={({ pressed }) => [styles.row, feedback(pressed)]}
+              onPress={() => router.push("/(customer)/account/addresses" as any)}
+            >
+              <View style={styles.iconTile}>
+                <MaterialIcons name="location-on" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Addresses</Text>
+                <Text style={styles.rowMeta}>Delivery locations</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+            </Pressable>
+            <View style={styles.hairline} />
+            <Pressable
+              style={({ pressed }) => [styles.row, feedback(pressed)]}
+              onPress={() => router.push("/(customer)/(tabs)/orders" as any)}
+            >
+              <View style={styles.iconTile}>
+                <MaterialIcons name="receipt-long" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Orders</Text>
+                <Text style={styles.rowMeta}>Order history</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+            </Pressable>
+            <View style={styles.hairline} />
+            <Pressable
+              style={({ pressed }) => [styles.row, feedback(pressed)]}
+              onPress={() => router.push("/(customer)/account/notifications" as any)}
+            >
+              <View style={styles.iconTile}>
+                <MaterialIcons name="notifications-none" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Notifications</Text>
+                <Text style={styles.rowMeta}>Alerts and updates</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+            </Pressable>
+            <View style={styles.hairline} />
+            <Pressable
+              style={({ pressed }) => [styles.row, feedback(pressed)]}
+              onPress={() => router.push("/(customer)/account/settings" as any)}
+            >
+              <View style={styles.iconTile}>
+                <MaterialIcons name="settings" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Settings</Text>
+                <Text style={styles.rowMeta}>App preferences</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
+            </Pressable>
+          </View>
+        </View>
 
-        <TouchableOpacity
-          style={styles.optionButton}
-          activeOpacity={0.7}
-          onPress={() => router.push("/(customer)/(tabs)/orders" as any)}
-        >
-          <Text style={styles.optionText}>Orders</Text>
-          <Text style={styles.optionHint}>Order history</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.optionButton}
-          activeOpacity={0.7}
-          onPress={() => router.push("/(customer)/account/notifications" as any)}
-        >
-          <Text style={styles.optionText}>Notifications</Text>
-          <Text style={styles.optionHint}>Alerts and updates</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.optionButton}
-          activeOpacity={0.7}
-          onPress={() => router.push("/(customer)/account/settings" as any)}
-        >
-          <Text style={styles.optionText}>Settings</Text>
-          <Text style={styles.optionHint}>App preferences</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={styles.logoutButton} activeOpacity={0.7} onPress={signOut}>
-        <Text style={styles.logoutText}>Sign out</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <View style={styles.logoutCard}>
+          <Pressable style={({ pressed }) => [styles.logoutBtn, feedback(pressed)]} onPress={signOut}>
+            <MaterialIcons name="logout" size={14} color={colors.danger} />
+            <Text style={styles.logoutText}>Sign out</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#f8f9f8" },
   container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-  header: {
-    gap: spacing.xs,
-  },
-  title: {
-    fontSize: fontSize.title1,
-    fontFamily: fontFamily.soraSemiBold,
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.pjsRegular,
-    color: colors.textMuted,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xl,
+    gap: spacing.sm,
+    maxWidth: 480,
+    width: "100%",
+    alignSelf: "center",
   },
   userCard: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
     backgroundColor: colors.backgroundAlt,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: borderWidth.thin,
+    borderColor: "#F1F5F9",
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    padding: spacing.sm,
     ...shadows.xs,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: {
-    color: colors.white,
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.pjsBold,
+  avatarText: { color: colors.white, fontFamily: fontFamily.pjsBold, fontSize: fontSize.footnote },
+  dot: {
+    position: "absolute",
+    bottom: -1,
+    right: -1,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.success,
+    borderWidth: 2,
+    borderColor: colors.white,
   },
-  userInfo: {
-    flex: 1,
-    gap: spacing.xxs,
-  },
-  userName: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.pjsSemiBold,
-    color: colors.text,
-  },
-  userEmail: {
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.pjsRegular,
-    color: colors.textMuted,
-  },
-  section: {
-    gap: spacing.sm,
-  },
-  sectionLabel: {
-    fontSize: fontSize.micro,
-    fontFamily: fontFamily.pjsBold,
-    letterSpacing: letterSpacing.wider,
-    color: colors.textMuted,
-    textTransform: "uppercase",
-  },
-  optionButton: {
-    backgroundColor: colors.backgroundAlt,
+  userInfo: { flex: 1, gap: 1, minWidth: 0 },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  userName: { color: colors.text, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.footnote, flexShrink: 1 },
+  rolePill: { backgroundColor: colors.primary, paddingHorizontal: 6, paddingVertical: 1, borderRadius: radius.pill },
+  roleText: { color: colors.white, fontFamily: fontFamily.pjsBold, fontSize: 8, letterSpacing: 0.3 },
+  userEmail: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: 11, lineHeight: 13 },
+  chev: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    minHeight: 44,
+    borderColor: "#F1F5F9",
+    alignItems: "center",
     justifyContent: "center",
+  },
+  sectionWrap: { gap: spacing.xs, marginTop: spacing.xs },
+  sectionTitle: {
+    color: "#94A3B8",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: 10,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    marginLeft: 2,
+  },
+  panel: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+    overflow: "hidden",
     ...shadows.xs,
   },
-  optionRow: {
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 10,
+    minHeight: 40,
   },
-  optionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
+  iconTile: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
   },
-  optionContent: { flex: 1 },
-  optionText: {
-    fontSize: fontSize.bodySmall,
-    fontFamily: fontFamily.pjsMedium,
-    color: colors.text,
-  },
-  optionHint: {
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.pjsRegular,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  logoutButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
+  rowText: { flex: 1, gap: 1 },
+  rowLabel: { color: colors.text, fontFamily: fontFamily.pjsMedium, fontSize: fontSize.footnote },
+  rowMeta: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: 11 },
+  hairline: { height: 1, backgroundColor: "#F1F5F9", marginHorizontal: spacing.sm },
+  logoutCard: {
     backgroundColor: colors.backgroundAlt,
-    paddingVertical: spacing.md,
-    alignItems: "center",
-    minHeight: 44,
-    marginTop: spacing.sm,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: "#FECDD3",
+    overflow: "hidden",
     ...shadows.xs,
+    marginTop: spacing.sm,
   },
-  logoutText: {
-    color: colors.danger,
-    fontSize: fontSize.bodySmall,
-    fontFamily: fontFamily.pjsSemiBold,
+  logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+    paddingVertical: 11,
+    minHeight: 40,
+    backgroundColor: "#FFF1F2",
   },
+  logoutText: { color: colors.danger, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.footnote },
 });

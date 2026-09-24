@@ -1,30 +1,22 @@
 import { router } from "expo-router";
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useMemo, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppLogo from "../../../components/common/AppLogo";
 import ErrorState from "../../../components/common/ErrorState";
 import LoadingState from "../../../components/common/LoadingState";
 import NotificationBell from "../../../components/common/NotificationBell";
 import SearchBar from "../../../components/common/SearchBar";
-import ProductCard from "../../../components/products/ProductCard";
+import HomeProductCard from "../../../components/home/HomeProductCard";
+import HomeFilterRow, { HOME_FILTERS, type HomeFilter } from "../../../components/home/HomeFilterRow";
+import HomeFilterSheet from "../../../components/home/HomeFilterSheet";
+import TrendingRail from "../../../components/home/TrendingRail";
 import colors from "../../../constants/colors";
 import spacing from "../../../constants/spacing";
 import { radius } from "../../../constants/sizes";
 import shadows from "../../../constants/shadows";
-import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
-import {
-  mockCategories,
-  mockManufacturers,
-} from "../../../services/mockData";
+import { fontFamily, fontSize } from "../../../constants/typography";
 import type { Product } from "../../../types/product";
 import { useCart } from "../../../providers/CartProvider";
 import { useProducts } from "../../../hooks/useProducts";
@@ -32,424 +24,269 @@ import { normalizeError } from "../../../utils/errorHandling";
 
 export default function CustomerHomeScreen() {
   const [query, setQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [selected, setSelected] = useState<HomeFilter>("All");
+  const [filterVisible, setFilterVisible] = useState(false);
   const [addingId, setAddingId] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<
-    { kind: "success" | "error"; message: string } | null
-  >(null);
+  const [feedback, setFeedback] = useState<{ kind: "success" | "error"; message: string } | null>(null);
   const { itemCount, addItem } = useCart();
-  const {
-    data: products,
-    loading,
-    error,
-  } = useProducts({ pageSize: 50 });
+  const { data: products, loading, error } = useProducts({ pageSize: 50 });
 
-  const featured = useMemo(
-    () => products.filter((product) => product.isFeatured),
-    [products],
-  );
-  const newProducts = useMemo(() => [...products].slice(0, 3), [products]);
-  const discounted = useMemo(
-    () => products.filter((product) => product.discountPercent),
-    [products],
-  );
-  const searchResults = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return products.slice(0, 4);
-    return products
-      .filter((product) =>
-        [product.name, product.brand, product.genericName, product.description]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedQuery),
-      )
-      .slice(0, 5);
-  }, [query, products]);
+  const trending = useMemo(() => products.filter((p) => p.isFeatured), [products]);
+
+  const filtered = useMemo(() => {
+    let list = [...products];
+    const q = query.trim().toLowerCase();
+    if (q) {
+      list = list.filter((p) =>
+        [p.name, p.brand, p.genericName, p.description].join(" ").toLowerCase().includes(q)
+      );
+    }
+    if (selected === "Trending") list = list.filter((p) => p.isFeatured);
+    if (selected === "Discount") list = list.filter((p) => (p.discountPercent ?? 0) > 0);
+    if (selected === "New") {
+      list = [...list].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    }
+    return list;
+  }, [products, query, selected]);
 
   const openProduct = (product: Product) => {
-    setSearchFocused(false);
-    router.push({
-      pathname: "/(customer)/products/[productId]",
-      params: { productId: product.id },
-    });
+    router.push({ pathname: "/(customer)/products/[productId]", params: { productId: product.id } });
   };
 
-  const handleAddToCart = useCallback(
+  const handleAdd = useCallback(
     async (product: Product) => {
       setAddingId(product.id);
       setFeedback(null);
       try {
         await addItem(product.id);
-        setFeedback({ kind: "success", message: `${product.name} added to cart.` });
-      } catch (nextError) {
-        setFeedback({ kind: "error", message: normalizeError(nextError).message });
+        setFeedback({ kind: "success", message: `${product.name} added` });
+        setTimeout(() => setFeedback(null), 2200);
+      } catch (e) {
+        setFeedback({ kind: "error", message: normalizeError(e).message });
       } finally {
         setAddingId(null);
       }
     },
-    [addItem],
+    [addItem]
   );
 
   if (loading) return <LoadingState label="Loading your pharmacy" />;
   if (error) return <ErrorState message={error} />;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.headerRow}>
-          <View style={styles.brandRow}>
-            <AppLogo size={38} />
-            <Text style={styles.brandName}>Hibbullah</Text>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <View style={styles.headerRow}>
+        <View style={styles.brandRow}>
+          <View style={styles.logoWrap}>
+            <AppLogo size={28} />
           </View>
-          <View style={styles.headerActions}>
-            <NotificationBell />
-            <Pressable
-              style={styles.cartButton}
-              onPress={() => router.push("/(customer)/(tabs)/cart")}
-              accessibilityRole="button"
-              accessibilityLabel="Open cart"
-            >
-              <SymbolView
-                name={{
-                  ios: "cart.fill",
-                  android: "shopping_cart",
-                  web: "shopping_cart",
-                }}
-                tintColor={colors.primary}
-                size={23}
-              />
-              {itemCount > 0 ? <Text style={styles.cartCount}>{itemCount > 99 ? "99+" : itemCount}</Text> : null}
-            </Pressable>
-          </View>
+          <Text style={styles.brandName}>Hibbullah</Text>
+        </View>
+        <View style={styles.headerActions}>
+          <NotificationBell />
+          <Pressable
+            style={styles.cartPill}
+            onPress={() => router.push("/(customer)/(tabs)/cart")}
+            accessibilityRole="button"
+            accessibilityLabel={`Open cart ${itemCount} items`}
+            hitSlop={4}
+          >
+            <MaterialIcons name="shopping-bag" size={18} color={colors.primary} />
+            {itemCount > 0 ? (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{itemCount > 99 ? "99+" : itemCount}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+        </View>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.searchArea}>
+          <SearchBar value={query} onChangeText={setQuery} placeholder="Search medicines" />
         </View>
 
-        <View style={styles.searchArea}>
-          <SearchBar
-            value={query}
-            onChangeText={setQuery}
-            onFocus={() => setSearchFocused(true)}
-            placeholder="Search medicines"
-          />
-          {searchFocused ? (
-            // Keep discovery contextual while the keyboard and home content stay in place.
-            <View style={styles.searchPanel}>
-              <Text style={styles.searchPanelTitle}>
-                {query ? "Recommended matches" : "Popular medicines"}
-              </Text>
-              <FlatList
-                data={searchResults}
-                keyboardShouldPersistTaps="handled"
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.searchResult}
-                    onPress={() => openProduct(item)}
-                  >
-                    <Text style={styles.searchResultName} numberOfLines={1}>
-                      {item.name}
-                    </Text>
-                    <Text style={styles.searchResultMeta} numberOfLines={1}>
-                      {item.brand} · {item.genericName}
-                    </Text>
-                  </Pressable>
-                )}
-                ListEmptyComponent={
-                  <Text style={styles.noResults}>No medicines found</Text>
-                }
-              />
-            </View>
-          ) : null}
-        </View>
+        <HomeFilterRow
+          selected={selected}
+          onSelect={setSelected}
+          onFilterPress={() => setFilterVisible(true)}
+        />
 
         {feedback ? (
-          <Text
-            style={[
-              styles.feedback,
-              feedback.kind === "success" ? styles.feedbackSuccess : styles.feedbackError,
-            ]}
-          >
+          <Text style={[styles.feedback, feedback.kind === "success" ? styles.feedbackSuccess : styles.feedbackError]}>
             {feedback.message}
           </Text>
         ) : null}
 
-        <View style={styles.heroCard}>
-          <Text style={styles.heroLabel}>Product of the day</Text>
-          {products.length > 0 ? (
-            <>
-              <Text style={styles.heroTitle}>{products[0].name}</Text>
-              <Text style={styles.heroText}>
-                {products[0].brand} · {products[0].genericName}
-              </Text>
-              <Text style={styles.heroPrice}>KSh {products[0].price}</Text>
-            </>
-          ) : (
-            <Text style={styles.heroText}>Browse our latest medicines below.</Text>
-          )}
+        {/* Trending rail — image only, inertial auto-slide */}
+        <TrendingRail products={trending.slice(0, 10)} onPress={openProduct} />
+
+        {/* Product grid — 2 per row on mobile, tactile capsule */}
+        <View style={styles.gridHeader}>
+          <Text style={styles.gridTitle}>
+            {query ? `Results · ${filtered.length}` : selected === "All" ? "All products" : selected}
+          </Text>
+          <Text style={styles.gridCount}>{filtered.length} items</Text>
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Trending</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="See all trending products"
-            onPress={() => router.push("/(customer)/(tabs)/products")}
-          >
-            <Text style={styles.link}>See all</Text>
-          </Pressable>
-        </View>
-        <FlatList
-          data={featured}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingRight: spacing.lg }}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.horizontalCard}>
-              <ProductCard
-                product={item}
-                onPress={openProduct}
-                onAddToCart={handleAddToCart}
-                addToCartLoading={addingId === item.id}
-              />
-            </View>
-          )}
-        />
+        {filtered.length === 0 ? (
+          <View style={styles.empty}>
+            <MaterialIcons name="search-off" size={28} color={colors.textMuted} />
+            <Text style={styles.emptyTitle}>No medicines found</Text>
+            <Text style={styles.emptyText}>Try a brand, generic name, or check your filters.</Text>
+          </View>
+        ) : (
+          <View style={styles.grid}>
+            {chunk(filtered, 2).map((row, ri) => (
+              <View key={ri} style={styles.row}>
+                {row.map((product) => (
+                  <View key={product.id} style={styles.cardWrap}>
+                    <HomeProductCard
+                      product={product}
+                      onPress={openProduct}
+                      onAdd={handleAdd}
+                      adding={addingId === product.id}
+                    />
+                  </View>
+                ))}
+                {row.length === 1 ? <View style={styles.cardWrap} /> : null}
+              </View>
+            ))}
+          </View>
+        )}
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>New arrivals</Text>
-        </View>
-        {newProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onPress={openProduct}
-            onAddToCart={handleAddToCart}
-            addToCartLoading={addingId === product.id}
-          />
-        ))}
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Discounted</Text>
-        </View>
-        {discounted.slice(0, 2).map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onPress={openProduct}
-            onAddToCart={handleAddToCart}
-            addToCartLoading={addingId === product.id}
-          />
-        ))}
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured categories</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="View all categories"
-            onPress={() => router.push("/(customer)/products/categories")}
-          >
-            <Text style={styles.link}>View all</Text>
-          </Pressable>
-        </View>
-        <View style={styles.chipGrid}>
-          {mockCategories.slice(0, 4).map((category) => (
-            <Pressable
-              key={category.id}
-              style={styles.chip}
-              accessibilityRole="button"
-              onPress={() =>
-                router.push({
-                  pathname: "/(customer)/products/category/[categoryId]",
-                  params: { categoryId: category.id },
-                })
-              }
-            >
-              <Text style={styles.chipText}>{category.name}</Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured manufacturers</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="View all manufacturers"
-            onPress={() => router.push("/(customer)/products/manufacturers")}
-          >
-            <Text style={styles.link}>View all</Text>
-          </Pressable>
-        </View>
-        <View style={styles.chipGrid}>
-          {mockManufacturers.slice(0, 4).map((manufacturer) => (
-            <Pressable
-              key={manufacturer.id}
-              style={styles.chip}
-              accessibilityRole="button"
-              onPress={() =>
-                router.push({
-                  pathname:
-                    "/(customer)/products/manufacturer/[manufacturerId]",
-                  params: { manufacturerId: manufacturer.id },
-                })
-              }
-            >
-              <Text style={styles.chipText}>{manufacturer.name}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <View style={{ height: spacing.xl }} />
       </ScrollView>
+
+      <HomeFilterSheet visible={filterVisible} onClose={() => setFilterVisible(false)} />
     </SafeAreaView>
   );
 }
 
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: spacing.xxl },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+    backgroundColor: colors.background,
   },
   brandRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  logoWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.backgroundAlt,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    ...shadows.xs,
+  },
   brandName: {
     color: colors.text,
     fontFamily: fontFamily.soraSemiBold,
     fontSize: fontSize.bodySmall,
+    letterSpacing: -0.2,
   },
-  headerActions: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  cartButton: {
-    minWidth: 44,
-    minHeight: 44,
+  headerActions: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  cartPill: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.pill,
+    backgroundColor: colors.backgroundAlt,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
     alignItems: "center",
     justifyContent: "center",
+    ...shadows.xs,
   },
-  cartCount: {
+  cartBadge: {
     position: "absolute",
-    top: 0,
-    right: 0,
-    minWidth: 17,
-    height: 17,
-    borderRadius: 9,
+    top: -4,
+    right: -4,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: colors.gold,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 3,
+    borderWidth: 1,
+    borderColor: colors.backgroundAlt,
+  },
+  cartBadgeText: {
     color: colors.white,
     fontFamily: fontFamily.pjsBold,
-    fontSize: fontSize.tiny,
+    fontSize: 9,
+    lineHeight: 11,
     textAlign: "center",
-    lineHeight: 17,
   },
-  searchArea: { position: "relative", zIndex: 10 },
-  searchPanel: {
-    position: "absolute",
-    top: 54,
-    left: 0,
-    right: 0,
-    maxHeight: 290,
-    backgroundColor: colors.backgroundAlt,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    zIndex: 20,
-    ...shadows.lg,
-  },
-  searchPanelTitle: {
-    color: colors.textMuted,
-    fontFamily: fontFamily.pjsBold,
-    fontSize: fontSize.caption,
-    letterSpacing: letterSpacing.wide,
-    marginBottom: spacing.xs,
-  },
-  searchResult: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderSoft,
-  },
-  searchResultName: {
-    color: colors.text,
-    fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.bodySmall,
-  },
-  searchResultMeta: {
-    color: colors.textMuted,
-    fontFamily: fontFamily.pjsRegular,
-    fontSize: fontSize.caption,
-    marginTop: spacing.xs,
-  },
-  noResults: {
-    color: colors.textMuted,
-    fontFamily: fontFamily.pjsRegular,
-    paddingVertical: spacing.md,
-  },
+  container: { paddingBottom: spacing.xxl, gap: 0 },
+  searchArea: { paddingHorizontal: spacing.lg, marginTop: spacing.sm },
   feedback: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
     fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.bodySmall,
-    marginTop: spacing.md,
-    marginBottom: spacing.md,
+    fontSize: fontSize.footnote,
   },
   feedbackSuccess: { color: colors.success },
   feedbackError: { color: colors.danger },
-  heroCard: {
-    backgroundColor: colors.primarySoft,
-    borderRadius: radius.lg,
-    padding: spacing.xl,
-    marginBottom: spacing.xl,
-  },
-  heroLabel: {
-    color: colors.primary,
-    fontFamily: fontFamily.pjsBold,
-    fontSize: fontSize.micro,
-    letterSpacing: letterSpacing.wider,
-    textTransform: "uppercase",
-  },
-  heroTitle: {
-    color: colors.text,
-    fontFamily: fontFamily.soraSemiBold,
-    fontSize: fontSize.title2,
-    marginTop: spacing.sm,
-  },
-  heroText: {
-    color: colors.textMuted,
-    fontFamily: fontFamily.pjsRegular,
-    fontSize: fontSize.bodySmall,
-    marginTop: spacing.xs,
-  },
-  heroPrice: {
-    color: colors.text,
-    fontFamily: fontFamily.pjsBold,
-    fontSize: fontSize.body,
-    marginTop: spacing.md,
-  },
-  sectionHeader: {
+  gridHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: spacing.md,
-    marginTop: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
   },
-  sectionTitle: {
-    color: colors.text,
+  gridTitle: {
     fontFamily: fontFamily.soraSemiBold,
-    fontSize: fontSize.title3,
-  },
-  link: {
-    color: colors.primary,
-    fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.bodySmall,
-  },
-  horizontalCard: { width: 260, marginRight: spacing.md },
-  chipGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
-  chip: {
-    backgroundColor: colors.backgroundAlt,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  chipText: {
-    color: colors.text,
-    fontFamily: fontFamily.pjsSemiBold,
     fontSize: fontSize.footnote,
+    color: colors.text,
+  },
+  gridCount: {
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
+  },
+  grid: { paddingHorizontal: spacing.lg, gap: spacing.md },
+  row: { flexDirection: "row", gap: spacing.md },
+  cardWrap: { flex: 1 },
+  empty: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.xl,
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: spacing.xl,
+    alignItems: "center",
+    gap: spacing.sm,
+    ...shadows.xs,
+  },
+  emptyTitle: { fontFamily: fontFamily.soraSemiBold, fontSize: fontSize.bodySmall, color: colors.text },
+  emptyText: {
+    fontFamily: fontFamily.pjsRegular,
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
+    textAlign: "center",
+    lineHeight: 18,
   },
 });

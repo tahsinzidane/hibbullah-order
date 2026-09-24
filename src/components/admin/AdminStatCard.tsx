@@ -1,17 +1,17 @@
-import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { StyleSheet, Text, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../../constants/colors";
-import sizes, { borderWidth } from "../../constants/sizes";
+import { radius, borderWidth } from "../../constants/sizes";
 import spacing from "../../constants/spacing";
 import shadows from "../../constants/shadows";
-import { fontSize, fontFamily, letterSpacing } from "../../constants/typography";
+import { fontSize, fontFamily, letterSpacing, lineHeight } from "../../constants/typography";
 
 type AdminStatCardProps = {
   label: string;
   value: string | number;
   detail?: string;
   accent?: "green" | "gold" | "neutral";
-  icon?: SymbolViewProps["name"];
+  icon?: string;
 };
 
 export default function AdminStatCard({
@@ -35,7 +35,9 @@ export default function AdminStatCard({
           ]}
         />
         {icon ? (
-          <SymbolView name={icon} tintColor={iconTint} size={16} />
+          <View style={[styles.iconBox, accent === "green" && styles.iconBoxGreen, accent === "gold" && styles.iconBoxGold]}>
+            <MaterialIcons name={icon as any} size={12} color={iconTint} />
+          </View>
         ) : null}
       </View>
       <Text style={styles.label}>{label}</Text>
@@ -52,44 +54,60 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: "46%",
     backgroundColor: colors.backgroundAlt,
-    borderRadius: sizes.borderRadius.md,
+    borderRadius: radius.lg,
     borderWidth: borderWidth.thin,
-    borderColor: colors.borderLight,
-    padding: spacing.md,
+    borderColor: "#F1F5F9",
+    padding: spacing.sm,
+    gap: 2,
     ...shadows.xs,
   },
   top: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: spacing.xs,
   },
   marker: {
-    width: 20,
+    width: 16,
     height: 2,
-    borderRadius: sizes.borderRadius.sm,
+    borderRadius: 2,
     backgroundColor: colors.borderLight,
-    marginBottom: spacing.sm,
   },
   greenMarker: { backgroundColor: colors.primary },
   goldMarker: { backgroundColor: colors.gold },
+  iconBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconBoxGreen: { backgroundColor: colors.primarySoft, borderColor: colors.successBorder },
+  iconBoxGold: { backgroundColor: colors.goldSoft, borderColor: colors.warningBorder },
   label: {
-    color: colors.textMuted,
+    color: "#94A3B8",
     fontFamily: fontFamily.pjsBold,
-    fontSize: fontSize.micro,
-    letterSpacing: letterSpacing.wider,
+    fontSize: 10,
+    letterSpacing: 0.7,
     textTransform: "uppercase",
+    lineHeight: 11,
   },
   value: {
     color: colors.text,
     fontFamily: fontFamily.pjsBold,
     fontSize: fontSize.title2,
-    marginTop: spacing.xs,
+    marginTop: 2,
     letterSpacing: letterSpacing.tight,
+    lineHeight: fontSize.title2 * lineHeight.tight,
   },
   detail: {
     color: colors.textMuted,
     fontFamily: fontFamily.pjsRegular,
-    fontSize: fontSize.caption,
-    marginTop: spacing.xs,
+    fontSize: 11,
+    marginTop: 1,
+    lineHeight: 13,
   },
 });

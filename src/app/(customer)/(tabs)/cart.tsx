@@ -83,8 +83,47 @@ export default function CustomerCartScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header title="Cart" subtitle="Review and checkout your items" />
-      <ScrollView contentContainerStyle={styles.container}>
+      <Header title="Cart" subtitle={`${items.length} ${items.length === 1 ? "item" : "items"}`} />
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Pricing — just under header */}
+        <View style={styles.summaryBox}>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Subtotal</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(summary.subtotal)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Discount</Text>
+            <Text style={[styles.summaryValue, styles.discountValue]}>-{formatCurrency(summary.discount)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Delivery</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(summary.deliveryFee)}</Text>
+          </View>
+          <View style={[styles.summaryRow, styles.totalRow]}>
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={[styles.totalText, styles.totalGold]}>{formatCurrency(summary.total)}</Text>
+          </View>
+        </View>
+
+        {/* Actions — compact row */}
+        <View style={styles.actionsRow}>
+          <View style={styles.actionHalf}>
+            <Button
+              title="Shop More"
+              variant="secondary"
+              onPress={() => router.push("/(customer)/(tabs)/products")}
+            />
+          </View>
+          <View style={styles.actionHalf}>
+            <Button
+              title="Checkout"
+              onPress={proceedToCheckout}
+              disabled={items.length === 0 || updating || checkingDelivery}
+              loading={checkingDelivery}
+            />
+          </View>
+        </View>
+
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {items.length === 0 ? (
           <EmptyState
@@ -94,52 +133,17 @@ export default function CustomerCartScreen() {
             onAction={() => router.push("/(customer)/(tabs)/products")}
           />
         ) : (
-          items.map((item) => (
-            <CartItemRow
-              key={item.id}
-              item={item}
-              onQuantity={(quantity) => updateQuantity(item.id, quantity)}
-              onRemove={() => removeCartItem(item.id)}
-            />
-          ))
+          <View style={styles.itemsList}>
+            {items.map((item) => (
+              <CartItemRow
+                key={item.id}
+                item={item}
+                onQuantity={(quantity) => updateQuantity(item.id, quantity)}
+                onRemove={() => removeCartItem(item.id)}
+              />
+            ))}
+          </View>
         )}
-
-        <View style={styles.summaryBox}>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(summary.subtotal)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Discount</Text>
-            <Text style={styles.summaryValue}>-{formatCurrency(summary.discount)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Delivery fee</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(summary.deliveryFee)}</Text>
-          </View>
-          <View style={[styles.summaryRow, styles.totalRow]}>
-            <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalText}>
-              {formatCurrency(summary.total)}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.actions}>
-          <Button
-            title="Continue shopping"
-            variant="secondary"
-            onPress={() => router.push("/(customer)/(tabs)/products")}
-            fullWidth
-          />
-          <Button
-            title="Proceed to checkout"
-            onPress={proceedToCheckout}
-            disabled={items.length === 0 || updating || checkingDelivery}
-            loading={checkingDelivery}
-            fullWidth
-          />
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -150,46 +154,55 @@ const styles = StyleSheet.create({
   container: {
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
-    gap: spacing.lg,
+    gap: spacing.md,
   },
   error: {
     color: colors.danger,
     fontFamily: fontFamily.pjsRegular,
     fontSize: fontSize.bodySmall,
+    marginTop: spacing.xs,
   },
   summaryBox: {
     backgroundColor: colors.backgroundAlt,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
+    borderColor: colors.borderLight,
+    padding: spacing.md,
+    gap: spacing.sm,
     ...shadows.xs,
   },
   summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: spacing.sm,
+    alignItems: "center",
   },
   totalRow: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
+    marginTop: 4,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.borderSoft,
   },
   totalText: {
     color: colors.text,
     fontFamily: fontFamily.pjsBold,
     fontSize: fontSize.body,
   },
+  totalGold: { color: colors.gold },
   summaryLabel: {
-    color: colors.text,
+    color: colors.textMuted,
     fontFamily: fontFamily.pjsRegular,
-    fontSize: fontSize.bodySmall,
+    fontSize: fontSize.footnote,
   },
   summaryValue: {
     color: colors.text,
     fontFamily: fontFamily.pjsSemiBold,
-    fontSize: fontSize.bodySmall,
+    fontSize: fontSize.footnote,
   },
-  actions: { gap: spacing.md },
+  discountValue: { color: colors.success },
+  actionsRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  actionHalf: { flex: 1 },
+  itemsList: { gap: spacing.sm, marginTop: spacing.xs },
 });

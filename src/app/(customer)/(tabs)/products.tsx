@@ -13,10 +13,12 @@ import Header from "../../../components/common/Header";
 import LoadingState from "../../../components/common/LoadingState";
 import ErrorState from "../../../components/common/ErrorState";
 import SearchBar from "../../../components/common/SearchBar";
-import ProductCard from "../../../components/products/ProductCard";
+import HomeProductCard from "../../../components/home/HomeProductCard";
 import colors from "../../../constants/colors";
 import spacing from "../../../constants/spacing";
-import { fontFamily, fontSize } from "../../../constants/typography";
+import { radius, borderWidth } from "../../../constants/sizes";
+import shadows from "../../../constants/shadows";
+import { fontFamily, fontSize, lineHeight } from "../../../constants/typography";
 import {
   mockCategories,
   mockManufacturers,
@@ -36,7 +38,8 @@ export default function CustomerProductsScreen() {
     { kind: "success" | "error"; message: string } | null
   >(null);
   const { addItem } = useCart();
-  const { columns } = useResponsive();
+  const { columns, isMobile } = useResponsive();
+  const displayColumns = isMobile ? 2 : Math.max(2, columns);
   const {
     data: products,
     loading,
@@ -83,24 +86,23 @@ export default function CustomerProductsScreen() {
       <Header title="Products" subtitle="Browse by category and manufacturer" />
       <FlatList
         data={filteredProducts}
-        key={columns}
-        numColumns={columns}
+        key={displayColumns}
+        numColumns={displayColumns}
         contentContainerStyle={styles.container}
-        columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
+        columnWrapperStyle={displayColumns > 1 ? styles.gridRow : undefined}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.gridItem}>
-            <ProductCard
+            <HomeProductCard
               product={item}
-              compact
               onPress={(product) =>
                 router.push({
                   pathname: "/(customer)/products/[productId]",
                   params: { productId: product.id },
                 })
               }
-              onAddToCart={handleAddToCart}
-              addToCartLoading={addingId === item.id}
+              onAdd={handleAddToCart}
+              adding={addingId === item.id}
             />
           </View>
         )}
@@ -201,10 +203,11 @@ const styles = StyleSheet.create({
   container: {
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
-    rowGap: spacing.lg,
+    rowGap: spacing.md,
+    gap: spacing.md,
   },
-  gridRow: { gap: spacing.lg },
-  gridItem: { flex: 1 },
+  gridRow: { gap: spacing.md },
+  gridItem: { flex: 1, maxWidth: "50%" },
   label: {
     color: colors.text,
     fontFamily: fontFamily.soraSemiBold,

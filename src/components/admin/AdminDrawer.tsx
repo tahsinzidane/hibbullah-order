@@ -20,6 +20,7 @@ const MENU_ITEMS: {
   { label: "Reports", path: "/(admin)/reports", icon: { ios: "chart.bar.fill", android: "bar_chart", web: "bar_chart" } },
   { label: "Returns", path: "/(admin)/returns", icon: { ios: "arrow.uturn.backward", android: "assignment_return", web: "assignment_return" } },
   { label: "Audit log", path: "/(admin)/audit", icon: { ios: "doc.text.fill", android: "description", web: "description" } },
+  { label: "Settings", path: "/(admin)/settings", icon: { ios: "gearshape.fill", android: "settings", web: "settings" } },
 ];
 
 const SHOP_ITEM = {

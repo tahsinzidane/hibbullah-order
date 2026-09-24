@@ -13,9 +13,10 @@ import ProductImage from "../../../../components/products/ProductImage";
 import { colors } from "../../../../constants/colors";
 import config from "../../../../constants/config";
 import { shadows } from "../../../../constants/shadows";
-import { radius } from "../../../../constants/sizes";
+import { radius, borderWidth } from "../../../../constants/sizes";
 import { spacing } from "../../../../constants/spacing";
 import { fontFamily, fontSize, letterSpacing } from "../../../../constants/typography";
+import { getProductImageUri } from "../../../../utils/image";
 import {
   deleteProduct,
   setProductActive,
@@ -134,11 +135,15 @@ export default function AdminProductDetailScreen() {
         />
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
-          <ProductImage
-            uri={product.image}
-            recyclingKey={product.id}
-            style={styles.image}
-          />
+          <View style={styles.imageCard}>
+            <View style={styles.imageWrap}>
+              <ProductImage
+                uri={getProductImageUri(product)}
+                recyclingKey={product.id}
+                style={styles.image}
+              />
+            </View>
+          </View>
 
           <View style={styles.card}>
             <Text style={styles.brand}>{product.brand}</Text>
@@ -246,13 +251,22 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: {
     padding: spacing.lg,
-    gap: spacing.lg,
+    gap: spacing.md,
     paddingBottom: spacing.xxl,
     alignSelf: "center",
     width: "100%",
     maxWidth: 720,
   },
-  image: { height: 180, borderRadius: radius.md },
+  imageCard: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.borderLight,
+    overflow: "hidden",
+    ...shadows.xs,
+  },
+  imageWrap: { aspectRatio: 1, padding: spacing.xs, backgroundColor: "#F8F8F6", alignItems: "center", justifyContent: "center" },
+  image: { width: "100%", height: "100%", borderRadius: radius.md, backgroundColor: "#F8F8F6" },
   card: {
     backgroundColor: colors.backgroundAlt,
     borderRadius: radius.lg,

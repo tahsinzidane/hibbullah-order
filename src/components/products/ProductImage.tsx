@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import { StyleSheet, type ImageStyle, type StyleProp } from "react-native";
 import colors from "../../constants/colors";
 import { layout } from "../../constants/sizes";
@@ -10,19 +10,28 @@ type ProductImageProps = {
   uri?: string | null;
   recyclingKey?: string;
   style?: StyleProp<ImageStyle>;
+  fallback?: any;
 };
 
-function ProductImage({ uri, recyclingKey, style }: ProductImageProps) {
+function ProductImage({ uri, recyclingKey, style, fallback = placeholder }: ProductImageProps) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+  }, [uri]);
+
+  const hasUri = !!uri && !failed;
+  // expo-image handles http/https; treat empty as placeholder
   return (
     <Image
-      // Remote URLs are temporary seed data; Expo Image handles cache reuse and recycling.
-      source={uri ? { uri } : placeholder}
-      placeholder={placeholder}
+      source={hasUri ? { uri: uri as string } : fallback}
+      placeholder={fallback}
+      placeholderContentFit="cover"
       recyclingKey={recyclingKey}
       cachePolicy="memory-disk"
       priority="low"
       contentFit="cover"
       transition={recyclingKey ? 0 : 180}
+      onError={() => setFailed(true)}
       style={[styles.image, style]}
     />
   );
@@ -32,7 +41,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: layout.productImage,
-    backgroundColor: colors.background,
+    backgroundColor: "#F8F8F6",
   },
 });
 

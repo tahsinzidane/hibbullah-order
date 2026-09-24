@@ -1,85 +1,35 @@
 import { router } from "expo-router";
-import { SymbolView, type SymbolViewProps } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../../components/common/Header";
-import { colors } from "../../../constants/colors";
-import { spacing } from "../../../constants/spacing";
-import { radius } from "../../../constants/sizes";
-import { shadows } from "../../../constants/shadows";
-import { fontFamily, fontSize, letterSpacing } from "../../../constants/typography";
+import colors from "../../../constants/colors";
+import spacing from "../../../constants/spacing";
+import { radius, borderWidth } from "../../../constants/sizes";
+import shadows from "../../../constants/shadows";
+import { fontFamily, fontSize, lineHeight, letterSpacing } from "../../../constants/typography";
 import { useAuth } from "../../../hooks/useAuth";
 import { usePressFeedback } from "../../../lib/motion";
 
-type IconName = SymbolViewProps["name"];
-
-const ROW_ICON_SIZE = 18;
-const RIPPLE = "rgba(2, 55, 25, 0.08)";
-const CHEVRON: IconName = { ios: "chevron.right", android: "chevron_right", web: "chevron_right" };
-const SIGN_OUT_ICON: IconName = {
-  ios: "rectangle.portrait.and.arrow.right",
-  android: "logout",
-  web: "logout",
-};
-
-// Rows point only at screens already registered in account/_layout.tsx
-// and the customer tabs — no routes added, none renamed.
-const SECTIONS: {
-  index: string;
-  title: string;
-  items: {
-    label: string;
-    meta: string;
-    route: string;
-    icon: IconName;
-  }[];
-}[] = [
+const SECTIONS = [
   {
-    index: "01",
     title: "Account",
     items: [
-      {
-        label: "Profile",
-        meta: "Name and contact",
-        route: "/(customer)/account/profile",
-        icon: { ios: "person.crop.circle.fill", android: "person", web: "person" },
-      },
-      {
-        label: "Addresses",
-        meta: "Delivery locations",
-        route: "/(customer)/account/addresses",
-        icon: { ios: "location.fill", android: "place", web: "place" },
-      },
+      { label: "Profile", meta: "Name and contact", route: "/(customer)/account/profile", icon: "person" as const },
+      { label: "Addresses", meta: "Delivery locations", route: "/(customer)/account/addresses", icon: "location-on" as const },
     ],
   },
   {
-    index: "02",
     title: "Activity",
     items: [
-      {
-        label: "Orders",
-        meta: "Track deliveries",
-        route: "/(customer)/(tabs)/orders",
-        icon: { ios: "shippingbox.fill", android: "inventory_2", web: "inventory_2" },
-      },
-      {
-        label: "Notifications",
-        meta: "Updates and alerts",
-        route: "/(customer)/account/notifications",
-        icon: { ios: "bell.fill", android: "notifications", web: "notifications" },
-      },
+      { label: "Orders", meta: "Track deliveries", route: "/(customer)/(tabs)/orders", icon: "receipt-long" as const },
+      { label: "Notifications", meta: "Updates and alerts", route: "/(customer)/account/notifications", icon: "notifications-none" as const },
     ],
   },
   {
-    index: "03",
     title: "Preferences",
     items: [
-      {
-        label: "Settings",
-        meta: "App preferences",
-        route: "/(customer)/account/settings",
-        icon: { ios: "gearshape.fill", android: "settings", web: "settings" },
-      },
+      { label: "Settings", meta: "App preferences", route: "/(customer)/account/settings", icon: "settings" as const },
     ],
   },
 ];
@@ -91,214 +41,201 @@ export default function CustomerAccountDashboard() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header
-        title="Account"
-        subtitle="Hibbullah · Your account"
-        onBack={() => router.back()}
-      />
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Identity block uses only the authenticated user — nothing fabricated. */}
-        <View style={styles.identityPanel}>
+      <Header title="Account" subtitle="Hibbullah · Your account" onBack={() => router.back()} />
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Compact identity — soft UI, home-like */}
+        <View style={styles.identityCard}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{initial}</Text>
+            <View style={styles.dot} />
           </View>
           <View style={styles.identityText}>
-            <Text style={styles.eyebrow}>Hibbullah · Customer</Text>
-            <Text style={styles.userName} numberOfLines={1}>
-              {user?.name ?? "Welcome"}
-            </Text>
+            <View style={styles.nameRow}>
+              <Text style={styles.userName} numberOfLines={1}>
+                {user?.name ?? "Welcome"}
+              </Text>
+              <View style={styles.rolePill}>
+                <Text style={styles.roleText}>Customer</Text>
+              </View>
+            </View>
             {user?.email ? (
               <Text style={styles.userEmail} numberOfLines={1}>
                 {user.email}
               </Text>
             ) : null}
+            {(user as any)?.phone ? (
+              <Text style={styles.userPhone} numberOfLines={1}>
+                {(user as any).phone}
+              </Text>
+            ) : null}
+          </View>
+          <View style={styles.chevBox}>
+            <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
           </View>
         </View>
 
         {SECTIONS.map((section) => (
-          <View key={section.index}>
-            <View style={styles.sectionHead}>
-              <Text style={styles.sectionIndex}>{section.index}</Text>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              <View style={styles.sectionRule} />
-            </View>
+          <View key={section.title} style={styles.sectionWrap}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
             <View style={styles.panel}>
-              {section.items.map((item, itemIndex) => (
+              {section.items.map((item, idx) => (
                 <View key={item.label}>
                   <Pressable
-                    style={({ pressed }) => [
-                      styles.row,
-                      feedback(pressed),
-                    ]}
-                    android_ripple={{ color: RIPPLE }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Open ${item.label}`}
+                    style={({ pressed }) => [styles.row, feedback(pressed)]}
                     onPress={() => router.push(item.route as never)}
+                    accessibilityRole="button"
                   >
                     <View style={styles.iconTile}>
-                      <SymbolView
-                        name={item.icon}
-                        tintColor={colors.primary}
-                        size={ROW_ICON_SIZE}
-                      />
+                      <MaterialIcons name={item.icon} size={16} color={colors.primary} />
                     </View>
                     <View style={styles.rowText}>
                       <Text style={styles.rowLabel}>{item.label}</Text>
                       <Text style={styles.rowMeta}>{item.meta}</Text>
                     </View>
-                    <SymbolView
-                      name={CHEVRON}
-                      tintColor={colors.textMuted}
-                      size={16}
-                    />
+                    <MaterialIcons name="chevron-right" size={16} color={colors.textMuted} />
                   </Pressable>
-                  {itemIndex < section.items.length - 1 ? (
-                    <View style={styles.hairline} />
-                  ) : null}
+                  {idx < section.items.length - 1 ? <View style={styles.hairline} /> : null}
                 </View>
               ))}
             </View>
           </View>
         ))}
 
-        <Pressable
-          style={({ pressed }) => [styles.signOut, feedback(pressed)]}
-          android_ripple={{ color: RIPPLE }}
-          accessibilityRole="button"
-          accessibilityLabel="Sign out"
-          onPress={signOut}
-        >
-          <SymbolView name={SIGN_OUT_ICON} tintColor={colors.primary} size={16} />
-          <Text style={styles.signOutText}>Sign out</Text>
-        </Pressable>
+        <View style={styles.logoutCard}>
+          <Pressable
+            style={({ pressed }) => [styles.logoutBtn, feedback(pressed)]}
+            onPress={signOut}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="logout" size={14} color={colors.danger} />
+            <Text style={styles.logoutText}>Sign out</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  // Solid light surfaces only; no blur, no translucency.
-  safeArea: { flex: 1, backgroundColor: colors.background },
+  safeArea: { flex: 1, backgroundColor: "#f8f9f8" },
   container: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xl,
+    gap: spacing.sm,
+    maxWidth: 480,
+    width: "100%",
+    alignSelf: "center",
   },
-  identityPanel: {
+  identityCard: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
     backgroundColor: colors.backgroundAlt,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: borderWidth.thin,
+    borderColor: "#F1F5F9",
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    padding: spacing.sm,
     ...shadows.xs,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: {
-    color: colors.white,
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.pjsBold,
+  avatarText: { color: colors.white, fontFamily: fontFamily.pjsBold, fontSize: fontSize.footnote },
+  dot: {
+    position: "absolute",
+    bottom: -1,
+    right: -1,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.success,
+    borderWidth: 2,
+    borderColor: colors.white,
   },
-  identityText: { flex: 1, gap: spacing.xs },
-  eyebrow: {
-    color: colors.textMuted,
-    fontSize: fontSize.micro,
-    fontFamily: fontFamily.pjsBold,
-    letterSpacing: letterSpacing.wider,
-    textTransform: "uppercase",
+  identityText: { flex: 1, gap: 1, minWidth: 0 },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  userName: { color: colors.text, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.footnote, flexShrink: 1 },
+  rolePill: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: radius.pill,
   },
-  userName: {
-    color: colors.text,
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.pjsSemiBold,
-  },
-  userEmail: {
-    color: colors.textMuted,
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.pjsRegular,
-  },
-  sectionHead: {
-    flexDirection: "row",
+  roleText: { color: colors.white, fontFamily: fontFamily.pjsBold, fontSize: 8, letterSpacing: 0.3 },
+  userEmail: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: 11, lineHeight: 13 },
+  userPhone: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: 11, lineHeight: 13 },
+  chevBox: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
     alignItems: "center",
-    gap: spacing.sm,
-    marginTop: spacing.sm,
+    justifyContent: "center",
   },
-  sectionIndex: {
-    color: colors.textMuted,
-    fontSize: fontSize.micro,
-    fontFamily: fontFamily.pjsBold,
-    letterSpacing: letterSpacing.wider,
-  },
+  sectionWrap: { gap: spacing.xs, marginTop: spacing.xs },
   sectionTitle: {
-    color: colors.text,
-    fontSize: fontSize.title3,
-    fontFamily: fontFamily.soraSemiBold,
+    color: "#94A3B8",
+    fontFamily: fontFamily.pjsBold,
+    fontSize: 10,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    marginLeft: 2,
   },
-  sectionRule: { flex: 1, height: 1, backgroundColor: colors.border },
   panel: {
     backgroundColor: colors.backgroundAlt,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
+    borderColor: "#F1F5F9",
+    overflow: "hidden",
     ...shadows.xs,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    minHeight: 44,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 10,
+    minHeight: 40,
   },
   iconTile: {
-    width: 28,
-    height: 28,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
   },
-  rowText: { flex: 1, gap: spacing.xs },
-  rowLabel: {
-    color: colors.text,
-    fontSize: fontSize.bodySmall,
-    fontFamily: fontFamily.pjsMedium,
+  rowText: { flex: 1, gap: 1 },
+  rowLabel: { color: colors.text, fontFamily: fontFamily.pjsMedium, fontSize: fontSize.footnote },
+  rowMeta: { color: colors.textMuted, fontFamily: fontFamily.pjsRegular, fontSize: 11 },
+  hairline: { height: 1, backgroundColor: "#F1F5F9", marginHorizontal: spacing.sm },
+  logoutCard: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: "#FECDD3",
+    overflow: "hidden",
+    ...shadows.xs,
+    marginTop: spacing.sm,
   },
-  rowMeta: {
-    color: colors.textMuted,
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.pjsRegular,
-  },
-  hairline: { height: 1, backgroundColor: colors.borderSoft },
-  signOut: {
+  logoutBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    backgroundColor: colors.backgroundAlt,
-    paddingVertical: spacing.md,
-    minHeight: 44,
-    marginTop: spacing.sm,
-    ...shadows.xs,
+    gap: spacing.xs,
+    paddingVertical: 11,
+    minHeight: 40,
+    backgroundColor: "#FFF1F2",
   },
-  signOutText: {
-    color: colors.primary,
-    fontSize: fontSize.bodySmall,
-    fontFamily: fontFamily.pjsSemiBold,
-  },
+  logoutText: { color: colors.danger, fontFamily: fontFamily.pjsSemiBold, fontSize: fontSize.footnote },
 });

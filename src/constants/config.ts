@@ -1,7 +1,7 @@
 export const config = {
   appName: "Hibbullah",
   currency: "KES",
-  currencySymbol: "KSh ",
+  currencySymbol: "TK ",
   orderCycleHours: 24,
   defaultPageSize: 20,
   supportEmail: "support@hibbullah.app",

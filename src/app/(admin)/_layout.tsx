@@ -37,6 +37,7 @@ export default function AdminLayout() {
         <Stack.Screen name="returns" />
         <Stack.Screen name="returns/[returnId]" />
         <Stack.Screen name="audit" />
+        <Stack.Screen name="settings" />
       </Stack>
       <AdminNavigation />
     </View>

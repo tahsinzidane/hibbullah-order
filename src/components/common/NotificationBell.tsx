@@ -1,7 +1,10 @@
 import { router } from "expo-router";
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../../constants/colors";
+import { radius } from "../../constants/sizes";
+import shadows from "../../constants/shadows";
+import spacing from "../../constants/spacing";
 import typography from "../../constants/typography";
 import { useNotifications } from "../../hooks/useNotifications";
 
@@ -20,11 +23,7 @@ export default function NotificationBell() {
       }
       hitSlop={4}
     >
-      <SymbolView
-        name={{ ios: "bell.fill", android: "notifications", web: "notifications" }}
-        tintColor={colors.primary}
-        size={23}
-      />
+      <MaterialIcons name="notifications-none" size={20} color={colors.primary} />
       {unreadCount > 0 ? (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>
@@ -38,10 +37,15 @@ export default function NotificationBell() {
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: 44,
-    minHeight: 44,
+    width: 36,
+    height: 36,
+    borderRadius: radius.pill,
+    backgroundColor: colors.backgroundAlt,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
     alignItems: "center",
     justifyContent: "center",
+    ...shadows.xs,
   },
   badge: {
     position: "absolute",

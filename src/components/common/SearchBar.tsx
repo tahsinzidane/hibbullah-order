@@ -1,4 +1,4 @@
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import colors from "../../constants/colors";
 import sizes from "../../constants/sizes";
@@ -25,12 +25,7 @@ export default function SearchBar({
 }: SearchBarProps) {
   return (
     <View style={styles.wrapper}>
-      <SymbolView
-        name={{ ios: "magnifyingglass", android: "search", web: "search" }}
-        tintColor={colors.textMuted}
-        size={18}
-        style={styles.icon}
-      />
+      <MaterialIcons name="search" size={18} color={colors.textMuted} style={styles.icon} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -50,11 +45,7 @@ export default function SearchBar({
           accessibilityRole="button"
           accessibilityLabel="Clear search"
         >
-          <SymbolView
-            name={{ ios: "xmark", android: "close", web: "close" }}
-            tintColor={colors.primary}
-            size={14}
-          />
+          <MaterialIcons name="close" size={14} color={colors.primary} />
         </Pressable>
       ) : null}
     </View>
